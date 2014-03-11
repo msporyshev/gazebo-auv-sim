@@ -9,6 +9,7 @@
 #include <ipc.h>
 
 #include "exception.h"
+#include "common.h"
 
 namespace gztransport = gazebo::transport;
 namespace gzmsgs = gazebo::msgs;
@@ -47,7 +48,6 @@ void gazebo_shutdown() {
 }
 
 int main(int argc, char** argv) {
-
     try {
         gazebo_init(argc, argv);
 

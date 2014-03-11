@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(adapter)
 
-add_definitions(--std=c++11)
+add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK)
+
 
 include (FindPkgConfig)
 if (PKG_CONFIG_FOUND)
@@ -10,7 +11,7 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 include(FindBoost)
-find_package(Boost REQUIRED system)
+find_package(Boost REQUIRED  system log)
 find_package(Protobuf REQUIRED)
 
 include_directories(${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
