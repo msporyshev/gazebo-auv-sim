@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(adapter)
 
-add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK)
+add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK -DROBOSUB_AUV)
+
+# set(IPC_INCLUDE_DIR /Users/msporyshev/Documents/projects/auv/control_system/include)
 
 
 include (FindPkgConfig)
@@ -14,7 +16,8 @@ include(FindBoost)
 find_package(Boost REQUIRED  system log)
 find_package(Protobuf REQUIRED)
 
-include_directories(${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories(${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} $ENV{IPC_INCLUDE_DIR})
+
 link_directories(${GAZEBO_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} ${Protobuf_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} main.cpp)

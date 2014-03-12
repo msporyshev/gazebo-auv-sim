@@ -5,34 +5,64 @@
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>
+#include <string>
+#include <memory>
 
 #include <ipc.h>
 
+#include <msg_robosub.h>
+#include <msg_navig.h>
+#include <msg_regul.h>
+
 #include "exception.h"
 #include "common.h"
+#include "transport_pipe.h"
 
 namespace gztransport = gazebo::transport;
 namespace gzmsgs = gazebo::msgs;
 
 typedef boost::shared_ptr<const gzmsgs::Image> ImageMsgPtr;
 
-void cb(const ImageMsgPtr& _msg)
-{
-  // Dump the message contents to stdout.
-    std::cout << _msg->DebugString();
+template<typename PipeTag>
+using  TransportPipePtr = std::shared_ptr<TransportPipe<PipeTag> >;
+
+struct AdapterParams {
+    std::string hostname = "localhost";
+    std::string taskname = "adapter";
+} adapter_params;
+
+TransportPipePtr<RegulPipeTag> regul_pipe;
+gztransport::Node node;
+
+void ipc_init() {
+    INFO() << "Connecting to ipc central";
+    if(IPC_connectModule(adapter_params.taskname.c_str(), adapter_params.hostname.c_str()) != IPC_OK) {
+        THROW(Exception("Unable to connect to central"));
+    }
+}
+
+void ipc_shutdown() {
+    IPC_disconnect();
 }
 
 void gazebo_init(int argc, char** argv) {
+    INFO() << "Starting gazebo client";
     if (!gazebo::setupClient(argc, argv)) {
         THROW(Exception("Unable to setup gazebo client"));
     }
 
-    gztransport::Node node;
+    INFO() << "Initializing gazebo transport node";
     node.Init();
 
-    gztransport::SubscriberPtr sub = node.Subscribe("~/camera/front", cb);
     gztransport::run();
 
+}
+
+void init(int argc, char** argv) {
+    ipc_init();
+    gazebo_init(argc, argv);
+
+    regul_pipe = TransportPipePtr<RegulPipeTag>(new TransportPipe<RegulPipeTag>(node));
 }
 
 void gazebo_loop() {
@@ -49,13 +79,14 @@ void gazebo_shutdown() {
 
 int main(int argc, char** argv) {
     try {
-        gazebo_init(argc, argv);
+        init(argc, argv);
 
         gazebo_loop();
 
         gazebo_shutdown();
+        ipc_shutdown();
     } catch (Exception& e) {
-        std::cerr << e << std::endl;
+        FATAL() << e;
         return 1;
     }
     return 0;
