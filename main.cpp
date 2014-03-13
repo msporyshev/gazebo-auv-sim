@@ -1,8 +1,5 @@
 #include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo.hh>
-
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <string>
@@ -10,16 +7,11 @@
 
 #include <ipc.h>
 
-#include <msg_robosub.h>
-#include <msg_navig.h>
-#include <msg_regul.h>
-
 #include "exception.h"
 #include "common.h"
 #include "transport_pipe.h"
 
 namespace gztransport = gazebo::transport;
-namespace gzmsgs = gazebo::msgs;
 
 template<typename PipeTag>
 using  TransportPipePtr = std::shared_ptr<TransportPipe<PipeTag> >;

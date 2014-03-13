@@ -13,6 +13,8 @@
 #include <boost/shared_ptr.hpp>
 
 #include "common.h"
+#include "convert.h"
+#include "msgs/regul.pb.h"
 
 template<typename MsgType>
 using Callback = std::function<void (const MsgType&)>;
@@ -88,7 +90,7 @@ public:
         publisher_->WaitForConnection();
     }
 
-    void publish(const MsgType& msg) {
+    void forward_msg(const MsgType& msg) {
         publisher_->Publish(msg);
     }
 
@@ -104,7 +106,7 @@ public:
         IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT);
     }
 
-    void publish(const MsgType& msg) {
+    void forward_msg(const MsgType& msg) {
         IPC_publishData(MsgConsts().IPC_NAME, &msg);
     }
 private:
@@ -122,7 +124,7 @@ struct RegulPipeTag {
     typedef MSG_REGUL_TYPE RecieveMsg;
     typedef IPCReciever<RecieveMsg, RegulPipeConsts> RecieverClass;
 
-    typedef gazebo::msgs::Vector3d ForwardMsg;
+    typedef msgs::Regul ForwardMsg;
     typedef GazeboForwarder<ForwardMsg, RegulPipeConsts> ForwarderClass;
 };
 
@@ -135,7 +137,7 @@ public:
     { }
 
     void on_recieve(const typename PipeTag::RecieveMsg& msg) {
-
+        forwarder_.forward_msg(convert(msg));
     }
 
 private:

@@ -1,0 +1,7 @@
+package msgs;
+import "vector3d.proto";
+
+message Regul {
+    required gazebo.msgs.Vector3d force_ratio = 1;
+    required gazebo.msgs.Vector3d torque_ratio = 2;
+}
