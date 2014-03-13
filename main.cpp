@@ -21,8 +21,6 @@
 namespace gztransport = gazebo::transport;
 namespace gzmsgs = gazebo::msgs;
 
-typedef boost::shared_ptr<const gzmsgs::Image> ImageMsgPtr;
-
 template<typename PipeTag>
 using  TransportPipePtr = std::shared_ptr<TransportPipe<PipeTag> >;
 
@@ -32,7 +30,7 @@ struct AdapterParams {
 } adapter_params;
 
 TransportPipePtr<RegulPipeTag> regul_pipe;
-gztransport::Node node;
+gztransport::NodePtr node;
 
 void ipc_init() {
     INFO() << "Connecting to ipc central";
@@ -52,15 +50,16 @@ void gazebo_init(int argc, char** argv) {
     }
 
     INFO() << "Initializing gazebo transport node";
-    node.Init();
+    node = gztransport::NodePtr(new gztransport::Node());
+    node->Init();
 
     gztransport::run();
 
 }
 
 void init(int argc, char** argv) {
-    ipc_init();
     gazebo_init(argc, argv);
+    ipc_init();
 
     regul_pipe = TransportPipePtr<RegulPipeTag>(new TransportPipe<RegulPipeTag>(node));
 }
