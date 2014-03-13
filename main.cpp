@@ -8,6 +8,8 @@
 
 #include <ipc.h>
 
+#include <boost/scope_exit.hpp>
+
 #include "exception.h"
 #include "common.h"
 #include "transport_pipe.h"
@@ -72,15 +74,17 @@ void gazebo_shutdown() {
 
 int main(int argc, char** argv) {
     try {
+        BOOST_SCOPE_EXIT_ALL() {
+            gazebo_shutdown();
+            ipc_shutdown();
+        };
+
         init(argc, argv);
 
         main_loop();
-
-        gazebo_shutdown();
-        ipc_shutdown();
     } catch (Exception& e) {
         FATAL() << e;
         return EXIT_FAILURE;
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
