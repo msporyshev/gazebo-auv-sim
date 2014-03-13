@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <cerrno>
 
 #include <ipc.h>
 
@@ -27,7 +28,7 @@ gztransport::NodePtr node;
 void ipc_init() {
     INFO() << "Connecting to ipc central";
     if(IPC_connectModule(adapter_params.taskname.c_str(), adapter_params.hostname.c_str()) != IPC_OK) {
-        THROW(Exception("Unable to connect to central"));
+        THROW(Exception(errno, "Unable to connect to central"));
     }
 }
 
@@ -56,8 +57,9 @@ void init(int argc, char** argv) {
     regul_pipe = TransportPipePtr<RegulPipeTag>(new TransportPipe<RegulPipeTag>(node));
 }
 
-void gazebo_loop() {
+void main_loop() {
     while (true) {
+        IPC_listenClear(0);
         gazebo::common::Time::MSleep(10);
     }
 }
@@ -72,13 +74,13 @@ int main(int argc, char** argv) {
     try {
         init(argc, argv);
 
-        gazebo_loop();
+        main_loop();
 
         gazebo_shutdown();
         ipc_shutdown();
     } catch (Exception& e) {
         FATAL() << e;
-        return 1;
+        return EXIT_FAILURE;
     }
     return 0;
 }

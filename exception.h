@@ -5,6 +5,8 @@
 #include <exception>
 #include <string>
 #include <ostream>
+#include <cerrno>
+#include <cstring>
 
 #define THROW(e) \
     BOOST_THROW_EXCEPTION(e)
@@ -17,11 +19,15 @@ public:
         *this << error_string_info(msg);
     }
 
+    explicit Exception(int errcode, std::string msg = "") {
+        *this << error_string_info(msg) << boost::errinfo_errno(errcode);
+    }
+
     virtual std::string info() const {
         return diagnostic_information(*this);
     }
 
-    friend std::ostream &operator<< (std::ostream &output, const Exception &e) {
+    friend std::ostream&operator<< (std::ostream &output, const Exception &e) {
         return output << e.info();
     }
 

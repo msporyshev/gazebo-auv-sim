@@ -1,5 +1,7 @@
 #pragma once
 #include <functional>
+#include <string>
+#include <cerrno>
 
 #include <msg_robosub.h>
 #include <msg_regul.h>
@@ -12,6 +14,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "exception.h"
 #include "common.h"
 #include "convert.h"
 #include "regul.pb.h"
@@ -40,16 +43,22 @@ public:
     explicit IPCReciever(Callback<MsgType> callback, gazebo::transport::NodePtr node = nullptr)
             : Reciever<MsgType>(callback)
     {
-        IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT);
+        if (IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT) != IPC_OK){
+            THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
+        }
+
         msg_format = IPC_parseFormat(consts_.IPC_FORMAT);
 
         INFO() << "Subscribing to ipc message: " << consts_.IPC_NAME;
-        IPC_subscribeData(MSG_REGUL_NAME, recieve_msg, this);
+        if (IPC_subscribeData(MSG_REGUL_NAME, recieve_msg, this) != IPC_OK) {
+            THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
+        }
     }
 
     static void recieve_msg(MSG_INSTANCE msgRef, void *callData, void* clientData) {
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
+        INFO() << "Recieved message of type: " << client->consts_.IPC_NAME;
         MsgType *m;
         IPC_unmarshall(client->msg_format, callData, (void **)&m);
 
@@ -60,8 +69,8 @@ public:
     }
 
     FORMATTER_PTR msg_format;
-private:
     MsgConsts consts_;
+private:
 };
 
 template<typename MsgType, typename MsgConsts>
