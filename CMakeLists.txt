@@ -18,7 +18,12 @@ find_package(Protobuf REQUIRED)
 
 add_subdirectory(msgs)
 
-include_directories(${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} $ENV{IPC_MSG_INCLUDE_DIR})
+include_directories(
+    ${GAZEBO_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+    $ENV{IPC_MSG_INCLUDE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/msgs
+)
 
 link_directories(${GAZEBO_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} ${Protobuf_LIBRARY_DIRS})
 

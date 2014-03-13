@@ -17,8 +17,6 @@ public:
         *this << error_string_info(msg);
     }
 
-    virtual ~Exception() {}
-
     virtual std::string info() const {
         return diagnostic_information(*this);
     }

@@ -14,7 +14,7 @@
 
 #include "common.h"
 #include "convert.h"
-#include "msgs/regul.pb.h"
+#include "regul.pb.h"
 
 template<typename MsgType>
 using Callback = std::function<void (const MsgType&)>;

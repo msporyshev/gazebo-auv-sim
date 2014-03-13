@@ -7,7 +7,7 @@
 #include <msg_robosub.h>
 #include <msg_regul.h>
 
-#include "msgs/regul.pb.h"
+#include "regul.pb.h"
 
 msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
     msgs::Regul result;

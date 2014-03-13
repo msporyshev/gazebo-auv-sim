@@ -14,6 +14,8 @@ set(msgs
   ${PROTOBUF_IMPORT_DIRS}/time.proto
 )
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/msgs)
+
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
-add_library(adapter_msgs SHARED regul.pb.cc)
+add_library(adapter_msgs SHARED ${PROTO_SRCS})
 target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES} ${GAZEBO_LIBRARIES})
