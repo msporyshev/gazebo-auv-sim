@@ -4,9 +4,6 @@ project(adapter)
 
 add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK -DROBOSUB_AUV)
 
-# set(IPC_MSG_INCLUDE_DIR /Users/msporyshev/Documents/projects/auv/control_system/include)
-
-
 include (FindPkgConfig)
 if (PKG_CONFIG_FOUND)
   pkg_check_modules(GAZEBO gazebo)

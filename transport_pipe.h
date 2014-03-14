@@ -37,6 +37,8 @@ protected:
     Callback<MsgType> callback_;
 };
 
+void recieve(MSG_INSTANCE msgRef, void *callData, void* clientData);
+
 template<typename MsgType, typename MsgConsts>
 class IPCReciever: public Reciever<MsgType> {
 public:
@@ -50,7 +52,7 @@ public:
         msg_format = IPC_parseFormat(consts_.IPC_FORMAT);
 
         INFO() << "Subscribing to ipc message: " << consts_.IPC_NAME;
-        if (IPC_subscribeData(MSG_REGUL_NAME, recieve_msg, this) != IPC_OK) {
+        if (IPC_subscribeData(consts_.IPC_NAME, recieve_msg, this) != IPC_OK) {
             THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
         }
     }
@@ -95,8 +97,12 @@ template<typename MsgType, typename MsgConsts>
 class GazeboForwarder {
 public:
     GazeboForwarder(gazebo::transport::NodePtr node) {
+        INFO() << "Connecting to gazebo topic";
         publisher_ = node->Advertise<MsgType>(consts_.TOPIC);
+        INFO() << "Waiting for connection";
         publisher_->WaitForConnection();
+
+        INFO() << SUCCESS;
     }
 
     void forward_msg(const MsgType& msg) {
@@ -126,7 +132,7 @@ private:
 struct RegulPipeConsts {
     const char* IPC_NAME = MSG_REGUL_NAME;
     const char* IPC_FORMAT = MSG_REGUL_FORMAT;
-    const std::string TOPIC = "~/robosub_auv/regul";
+    const std::string TOPIC = "~/regul";
 };
 
 struct RegulPipeTag {
@@ -146,6 +152,7 @@ public:
     { }
 
     void on_recieve(const typename PipeTag::RecieveMsg& msg) {
+        INFO() << "Forwarding message";
         forwarder_.forward_msg(convert(msg));
     }
 

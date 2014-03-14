@@ -22,6 +22,7 @@ using  TransportPipePtr = std::shared_ptr<TransportPipe<PipeTag> >;
 struct AdapterParams {
     std::string hostname = "localhost";
     std::string taskname = "adapter";
+    std::string topic_namespace = "robosub_auv";
 } adapter_params;
 
 TransportPipePtr<RegulPipeTag> regul_pipe;
@@ -32,6 +33,7 @@ void ipc_init() {
     if(IPC_connectModule(adapter_params.taskname.c_str(), adapter_params.hostname.c_str()) != IPC_OK) {
         THROW(Exception(errno, "Unable to connect to central"));
     }
+    INFO() << SUCCESS;
 }
 
 void ipc_shutdown() {
@@ -45,11 +47,12 @@ void gazebo_init(int argc, char** argv) {
     }
 
     INFO() << "Initializing gazebo transport node";
-    node = gztransport::NodePtr(new gztransport::Node());
-    node->Init();
 
+    gztransport::init();
     gztransport::run();
 
+    node = gztransport::NodePtr(new gztransport::Node());
+    node->Init(adapter_params.topic_namespace);
 }
 
 void init(int argc, char** argv) {
@@ -68,7 +71,7 @@ void main_loop() {
 
 void gazebo_shutdown() {
     gztransport::fini();
-
+    node->Fini();
     gazebo::shutdown();
 }
 
