@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(adapter)
 
-add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK -DROBOSUB_AUV)
+add_definitions(--std=c++11 -DBOOST_LOG_DYN_LINK -DROBOSUB_AUV -Wall -Werror -O3)
 
 include (FindPkgConfig)
 if (PKG_CONFIG_FOUND)
@@ -10,7 +10,7 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 include(FindBoost)
-find_package(Boost REQUIRED  system log)
+find_package(Boost REQUIRED  system log program_options)
 find_package(Protobuf REQUIRED)
 
 add_subdirectory(msgs)
