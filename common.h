@@ -2,6 +2,7 @@
 
 #include <boost/log/trivial.hpp>
 
+
 #define SUCCESS    "Success"
 
 #define TRACE()    BOOST_LOG_TRIVIAL(trace)

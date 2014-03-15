@@ -9,26 +9,43 @@
 #include <ipc.h>
 
 #include <boost/scope_exit.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 #include "exception.h"
 #include "common.h"
+#include "policy.h"
 #include "transport_pipe.h"
+
 
 namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
+namespace logging = boost::log::trivial;
 
-template<typename PipeTag>
-using  TransportPipePtr = std::shared_ptr<TransportPipe<PipeTag> >;
+namespace {
+
+template<typename PipePolicy>
+using  TransportPipePtr = std::shared_ptr<TransportPipe<PipePolicy> >;
 
 struct AdapterParams {
     std::string hostname = "localhost";
     std::string taskname = "adapter";
     std::string topic_namespace = "robosub_auv";
-    std::string log_level  = "INFO";
+    logging::severity_level log_level = logging::info;
 } adapter_params;
 
-TransportPipePtr<RegulPipeTag> regul_pipe;
+TransportPipePtr<RegulPolicy> regul_pipe;
 gztransport::NodePtr node;
+
+template<typename T>
+void load_param(const po::variables_map& vm, std::string name, T& param) {
+    if (!vm.count(name)) {
+        return;
+    }
+
+    param = vm[name].as<T>();
+}
 
 void ipc_init() {
     INFO() << "Connecting to ipc central";
@@ -42,13 +59,20 @@ void ipc_shutdown() {
     IPC_disconnect();
 }
 
+void log_init() {
+    boost::log::core::get()->set_filter
+    (
+        logging::severity >= adapter_params.log_level
+    );
+}
+
 void program_options_init(int argc, char** argv) {
-    po::options_description desc("Usage:");
+    po::options_description desc("Usage");
     desc.add_options()
         ("help,h", "Produce help message")
         ("ipc-host,i", po::value<std::string>(), "Set ipc central ip address, default=localhost")
         ("namespace,n", po::value<std::string>(), "Set gazebo topic namespace, default=robosub_auv")
-        ("verbose,v", po::value<std::string>(), "Be verbose <INFO|WARNING|ERROR|FATAL|DEBUG>, default=INFO")
+        ("verbose,v", po::value<logging::severity_level>(), "Be verbose <debug|info|warning|error|fatal>, default=info")
     ;
 
     po::variables_map vm;
@@ -60,18 +84,9 @@ void program_options_init(int argc, char** argv) {
         exit(EXIT_SUCCESS);
     }
 
-    if (vm.count("ipc-host")) {
-        adapter_params.hostname = vm["ipc-host"].as<std::string>();
-    }
-
-    if (vm.count("namespace")) {
-        adapter_params.topic_namespace = vm["namespace"].as<std::string>();
-    }
-
-    if (vm.count("verbose")) {
-        adapter_params.log_level = vm["verbose"].as<std::string>();
-    }
-
+    load_param(vm, "ipc-host", adapter_params.hostname);
+    load_param(vm, "namespace", adapter_params.topic_namespace);
+    load_param(vm, "verbose", adapter_params.log_level);
 }
 
 void gazebo_init(int argc, char** argv) {
@@ -92,10 +107,12 @@ void gazebo_init(int argc, char** argv) {
 void init(int argc, char** argv) {
     program_options_init(argc, argv);
 
+    log_init();
+
     gazebo_init(argc, argv);
     ipc_init();
 
-    regul_pipe = TransportPipePtr<RegulPipeTag>(new TransportPipe<RegulPipeTag>(node));
+    regul_pipe = TransportPipePtr<RegulPolicy>(new TransportPipe<RegulPolicy>(node));
 }
 
 void main_loop() {
@@ -110,6 +127,8 @@ void gazebo_shutdown() {
     node->Fini();
     gazebo::shutdown();
 }
+
+} // namespace
 
 int main(int argc, char** argv) {
     try {

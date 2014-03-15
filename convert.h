@@ -9,6 +9,7 @@
 
 #include "regul.pb.h"
 
+
 msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
     msgs::Regul result;
     *result.mutable_force_ratio() = gazebo::msgs::Convert(gazebo::math::Vector3(msg.tx, msg.ty, msg.tz));

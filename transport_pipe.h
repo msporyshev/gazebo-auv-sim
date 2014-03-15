@@ -3,10 +3,6 @@
 #include <string>
 #include <cerrno>
 
-#include <msg_robosub.h>
-#include <msg_regul.h>
-#include <msg_navig.h>
-
 #include <ipc.h>
 
 #include <gazebo/msgs/msgs.hh>
@@ -17,7 +13,7 @@
 #include "exception.h"
 #include "common.h"
 #include "convert.h"
-#include "regul.pb.h"
+
 
 template<typename MsgType>
 using Callback = std::function<void (const MsgType&)>;
@@ -128,35 +124,20 @@ private:
     MsgConsts consts_;
 };
 
-
-struct RegulPipeConsts {
-    const char* IPC_NAME = MSG_REGUL_NAME;
-    const char* IPC_FORMAT = MSG_REGUL_FORMAT;
-    const std::string TOPIC = "~/regul";
-};
-
-struct RegulPipeTag {
-    typedef MSG_REGUL_TYPE RecieveMsg;
-    typedef IPCReciever<RecieveMsg, RegulPipeConsts> RecieverClass;
-
-    typedef msgs::Regul ForwardMsg;
-    typedef GazeboForwarder<ForwardMsg, RegulPipeConsts> ForwarderClass;
-};
-
-template<typename PipeTag>
+template<typename PipePolicy>
 class TransportPipe {
 public:
     TransportPipe(gazebo::transport::NodePtr node)
-        : reciever_([&](const typename PipeTag::RecieveMsg& msg) {this->on_recieve(msg);}, node)
+        : reciever_([&](const typename PipePolicy::RecieveMsg& msg) {this->on_recieve(msg);}, node)
         , forwarder_(node)
     { }
 
-    void on_recieve(const typename PipeTag::RecieveMsg& msg) {
+    void on_recieve(const typename PipePolicy::RecieveMsg& msg) {
         INFO() << "Forwarding message";
         forwarder_.forward_msg(convert(msg));
     }
 
 private:
-    typename PipeTag::RecieverClass reciever_;
-    typename PipeTag::ForwarderClass forwarder_;
+    typename PipePolicy::RecieverClass reciever_;
+    typename PipePolicy::ForwarderClass forwarder_;
 };
