@@ -14,12 +14,13 @@
 #include "common.h"
 #include "convert.h"
 
+class AbstractPipe {};
 
 template<typename MsgType>
 using Callback = std::function<void (const MsgType&)>;
 
-typedef boost::shared_ptr<const gazebo::msgs::Image> ImageMsgPtr;
-
+template<typename MsgType>
+using  MsgPtr = boost::shared_ptr<const MsgType>;
 
 template<typename MsgType>
 class Reciever {
@@ -78,11 +79,11 @@ public:
             : Reciever<MsgType>(callback), node_(node)
     {
         INFO() << "Subscribing to gazebo topic: " << consts_.TOPIC;
-        gazebo::transport::SubscriberPtr sub = node->Subscribe(consts_.TOPIC, &recieve_msg, this);
+        gazebo::transport::SubscriberPtr sub = node->Subscribe(consts_.TOPIC, &GazeboReciever::recieve_msg, this);
     }
 
-    void recieve_msg(MsgType msg) {
-        callback_(msg);
+    void recieve_msg(const MsgPtr<MsgType>& msg) {
+        this->callback_(*msg);
     }
 private:
     gazebo::transport::NodePtr node_;
@@ -113,19 +114,20 @@ private:
 template<typename MsgType, typename MsgConsts>
 class IPCForwarder {
 public:
-    IPCForwarder() {
+    IPCForwarder(gazebo::transport::NodePtr node = nullptr) {
         IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT);
     }
 
     void forward_msg(const MsgType& msg) {
-        IPC_publishData(MsgConsts().IPC_NAME, &msg);
+        auto fwd = msg;
+        IPC_publishData(consts_.IPC_NAME, &fwd);
     }
 private:
     MsgConsts consts_;
 };
 
 template<typename PipePolicy>
-class TransportPipe {
+class TransportPipe: public AbstractPipe {
 public:
     TransportPipe(gazebo::transport::NodePtr node)
         : reciever_([&](const typename PipePolicy::RecieveMsg& msg) {this->on_recieve(msg);}, node)

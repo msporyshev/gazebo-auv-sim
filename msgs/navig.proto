@@ -1,0 +1,7 @@
+package msgs;
+import "vector3d.proto";
+
+message Navig {
+    required gazebo.msgs.Vector3d position = 1;
+    required gazebo.msgs.Vector3d angle = 2;
+}

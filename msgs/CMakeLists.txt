@@ -9,7 +9,10 @@ endforeach()
 
 set(msgs
   regul.proto
+  navig.proto
+  camera.proto
   ${PROTOBUF_IMPORT_DIRS}/vector3d.proto
+  ${PROTOBUF_IMPORT_DIRS}/image.proto
   ${PROTOBUF_IMPORT_DIRS}/header.proto
   ${PROTOBUF_IMPORT_DIRS}/time.proto
 )
@@ -17,5 +20,6 @@ set(msgs
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/msgs)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
-add_library(adapter_msgs SHARED regul.pb.cc)
-target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES} ${GAZEBO_LIBRARIES})
+# set(MSG_SRCS regul.pb.cc navig.pb.cc camera.pb.cc)
+add_library(adapter_msgs SHARED ${PROTO_SRCS})
+target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES})

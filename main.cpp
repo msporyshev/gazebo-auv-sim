@@ -35,7 +35,7 @@ struct AdapterParams {
     logging::severity_level log_level = logging::info;
 } adapter_params;
 
-TransportPipePtr<RegulPolicy> regul_pipe;
+std::list<std::shared_ptr<AbstractPipe> > pipes;
 gztransport::NodePtr node;
 
 template<typename T>
@@ -112,7 +112,9 @@ void init(int argc, char** argv) {
     gazebo_init(argc, argv);
     ipc_init();
 
-    regul_pipe = TransportPipePtr<RegulPolicy>(new TransportPipe<RegulPolicy>(node));
+    pipes.emplace_back(new TransportPipe<RegulPolicy>(node));
+    pipes.emplace_back(new TransportPipe<NavigPolicy>(node));
+    pipes.emplace_back(new TransportPipe<CameraPolicy>(node));
 }
 
 void main_loop() {
