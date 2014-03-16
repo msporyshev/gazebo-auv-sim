@@ -91,9 +91,10 @@ void program_options_init(int argc, char** argv) {
 
 void gazebo_init(int argc, char** argv) {
     INFO() << "Starting gazebo client";
-    if (!gazebo::setupClient(argc, argv)) {
+    if (!gazebo::load(argc, argv)) {
         THROW(Exception("Unable to setup gazebo client"));
     }
+    gazebo::run();
 
     INFO() << "Initializing gazebo transport node";
 
@@ -127,7 +128,7 @@ void main_loop() {
 void gazebo_shutdown() {
     gztransport::fini();
     node->Fini();
-    gazebo::shutdown();
+    gazebo::fini();
 }
 
 } // namespace
