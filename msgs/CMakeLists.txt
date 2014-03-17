@@ -20,6 +20,6 @@ set(msgs
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/msgs)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
-# set(MSG_SRCS regul.pb.cc navig.pb.cc camera.pb.cc)
-add_library(adapter_msgs SHARED ${PROTO_SRCS})
-target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES})
+set(MSG_SRCS regul.pb.cc navig.pb.cc camera.pb.cc vector3d.pb.h time.pb.h header.pb.h image.pb.h)
+add_library(adapter_msgs SHARED ${MSG_SRCS})
+target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES} ${GAZEBO_LIBRARIES})
