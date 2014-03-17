@@ -10,8 +10,15 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 include(FindBoost)
-find_package(Boost REQUIRED  system log program_options)
 find_package(Protobuf REQUIRED)
+find_package(Boost COMPONENTS log)
+find_package(Boost REQUIRED COMPONENTS system program_options)
+
+if (Boost_LOG_FOUND)
+    add_definitions(-DUSING_BOOST_LOG)
+else()
+    message("Without boost log")
+endif()
 
 add_subdirectory(msgs)
 
@@ -22,7 +29,11 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/msgs
 )
 
-link_directories(${GAZEBO_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} ${Protobuf_LIBRARY_DIRS})
+link_directories(
+    ${GAZEBO_LIBRARY_DIRS}
+    ${Boost_LIBRARY_DIRS}
+    ${Protobuf_LIBRARY_DIRS}
+)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} adapter_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} -lipc)

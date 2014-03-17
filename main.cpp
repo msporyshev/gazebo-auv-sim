@@ -9,9 +9,21 @@
 #include <ipc.h>
 
 #include <boost/scope_exit.hpp>
+
+#ifdef USING_BOOST_LOG
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+
+#define DEFAULT_LEVEL boost::log::trivial::info;
+
+namespace logging = boost::log::trivial;
+
+typedef logging::severity_level LogLevel;
+#else
+typedef std::string LogLevel;
+#define DEFAULT_LEVEL "info"
+#endif
 
 #include "exception.h"
 #include "common.h"
@@ -21,7 +33,6 @@
 
 namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
-namespace logging = boost::log::trivial;
 
 namespace {
 
@@ -32,7 +43,7 @@ struct AdapterParams {
     std::string hostname = "localhost";
     std::string taskname = "adapter";
     std::string topic_namespace = "robosub_auv";
-    logging::severity_level log_level = logging::info;
+    LogLevel log_level = DEFAULT_LEVEL;
 } adapter_params;
 
 std::list<std::shared_ptr<AbstractPipe> > pipes;
@@ -60,10 +71,12 @@ void ipc_shutdown() {
 }
 
 void log_init() {
+#ifdef USING_BOOST_LOG
     boost::log::core::get()->set_filter
     (
         logging::severity >= adapter_params.log_level
     );
+#endif
 }
 
 void program_options_init(int argc, char** argv) {
@@ -72,7 +85,7 @@ void program_options_init(int argc, char** argv) {
         ("help,h", "Produce help message")
         ("ipc-host,i", po::value<std::string>(), "Set ipc central ip address, default=localhost")
         ("namespace,n", po::value<std::string>(), "Set gazebo topic namespace, default=robosub_auv")
-        ("verbose,v", po::value<logging::severity_level>(), "Be verbose <debug|info|warning|error|fatal>, default=info")
+        ("verbose,v", po::value<LogLevel>(), "Be verbose <debug|info|warning|error|fatal>, default=info")
     ;
 
     po::variables_map vm;
