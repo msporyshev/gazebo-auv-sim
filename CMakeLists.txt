@@ -36,5 +36,14 @@ link_directories(
 )
 
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} adapter_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} -lipc)
+target_link_libraries(
+    ${PROJECT_NAME}
+    adapter_msgs
+    ${GAZEBO_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${Boost_LOG_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    ipc
+)
+
 add_dependencies(${PROJECT_NAME} adapter_msgs)
