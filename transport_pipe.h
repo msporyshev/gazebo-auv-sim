@@ -78,15 +78,17 @@ public:
     explicit GazeboReciever(Callback<MsgType> callback, gazebo::transport::NodePtr node)
             : Reciever<MsgType>(callback), node_(node)
     {
-        INFO() << "Subscribing to gazebo topic: " << consts_.TOPIC;
-        gazebo::transport::SubscriberPtr sub = node->Subscribe(consts_.TOPIC, &GazeboReciever::recieve_msg, this);
+        subscriber_ = node->Subscribe(consts_.TOPIC, &GazeboReciever::recieve_msg, this);
+        INFO() << "Subscribed to gazebo topic: " << subscriber_->GetTopic();
     }
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
+        INFO() << "Recieved message from gazebo topic: " << subscriber_->GetTopic();
         this->callback_(*msg);
     }
 private:
     gazebo::transport::NodePtr node_;
+    gazebo::transport::SubscriberPtr subscriber_;
     MsgConsts consts_;
 };
 
@@ -94,11 +96,11 @@ template<typename MsgType, typename MsgConsts>
 class GazeboForwarder {
 public:
     GazeboForwarder(gazebo::transport::NodePtr node) {
-        INFO() << "Connecting to gazebo topic";
         publisher_ = node->Advertise<MsgType>(consts_.TOPIC);
+        INFO() << "Advertised to gazebo topic" << publisher_->GetTopic();
+
         INFO() << "Waiting for connection";
         publisher_->WaitForConnection();
-
         INFO() << SUCCESS;
     }
 
@@ -119,6 +121,7 @@ public:
     }
 
     void forward_msg(const MsgType& msg) {
+        INFO() << "Forwarding message to ipc: " << consts_.IPC_NAME;
         auto fwd = msg;
         IPC_publishData(consts_.IPC_NAME, &fwd);
     }
@@ -135,7 +138,6 @@ public:
     { }
 
     void on_recieve(const typename PipePolicy::RecieveMsg& msg) {
-        INFO() << "Forwarding message";
         forwarder_.forward_msg(convert(msg));
     }
 

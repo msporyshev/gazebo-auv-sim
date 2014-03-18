@@ -45,8 +45,8 @@ MSG_VIDEO_FRAME convert(const msgs::Camera& msg) {
     m.h = msg.frame().height();
     m.channels = 3;
     m.size = m.w * m.h * m.channels;
-
-    memcpy(m.frame, msg.frame().data().c_str(), msg.frame().width() * msg.frame().height() * 3);
+    m.frame = malloc(msg.frame().data().size());
+    memcpy(m.frame, msg.frame().data().c_str(), msg.frame().data().size());
 
     return m;
 }
