@@ -148,10 +148,10 @@ void gazebo_shutdown() {
 
 int main(int argc, char** argv) {
     try {
-        BOOST_SCOPE_EXIT_ALL() {
+        BOOST_SCOPE_EXIT(void) {
             gazebo_shutdown();
             ipc_shutdown();
-        };
+        } BOOST_SCOPE_EXIT_END;
 
         init(argc, argv);
 
