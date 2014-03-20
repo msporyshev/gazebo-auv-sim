@@ -10,9 +10,9 @@
 #include <msg_regul.h>
 #include <msg_navig.h>
 
-#include "regul.pb.h"
-#include "navig.pb.h"
-#include "camera.pb.h"
+#include <regul.pb.h>
+#include <navig.pb.h>
+#include <camera.pb.h>
 
 
 msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
