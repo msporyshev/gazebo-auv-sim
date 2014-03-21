@@ -44,7 +44,6 @@ CameraMessage convert(const msgs::Camera& msg) {
     MSG_JPEG_VIDEO_FRAME m;
 
     cv::Mat frame(msg.frame().height(), msg.frame().width(),  CV_8UC3, (uchar   *)msg.frame().data().c_str());
-    cv::imwrite("image.png", frame);
 
     std::vector<uchar> buff(frame.cols * frame.rows * 3);
 
