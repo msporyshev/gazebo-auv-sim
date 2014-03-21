@@ -13,6 +13,7 @@ include(FindBoost)
 find_package(Protobuf REQUIRED)
 find_package(Boost COMPONENTS log)
 find_package(Boost REQUIRED COMPONENTS system program_options)
+find_package(OpenCV REQUIRED)
 
 if (Boost_LOG_FOUND)
     add_definitions(-DUSING_BOOST_LOG)
@@ -27,12 +28,14 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     $ENV{IPC_MSG_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/msgs
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 link_directories(
     ${GAZEBO_LIBRARY_DIRS}
     ${Boost_LIBRARY_DIRS}
     ${Protobuf_LIBRARY_DIRS}
+    ${OpenCV_LIBRARY_DIRS}
 )
 
 add_executable(${PROJECT_NAME} main.cpp)
@@ -43,6 +46,7 @@ target_link_libraries(
     ${Boost_LIBRARIES}
     ${Boost_LOG_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    ${OpenCV_LIBRARIES}
     ipc
 )
 

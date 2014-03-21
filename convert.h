@@ -14,6 +14,9 @@
 #include <navig.pb.h>
 #include <camera.pb.h>
 
+#include <opencv2/opencv.hpp>
+
+#include "ipc_message.h"
 
 msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
     msgs::Regul result;
@@ -23,7 +26,7 @@ msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
     return result;
 }
 
-MSG_NAVIG_TYPE convert(const msgs::Navig& msg) {
+IPCMessage<MSG_NAVIG_TYPE> convert(const msgs::Navig& msg) {
     MSG_NAVIG_TYPE result;
 
     result.X_KNS = msg.position().x();
@@ -34,19 +37,27 @@ MSG_NAVIG_TYPE convert(const msgs::Navig& msg) {
     result.Psi_NS = msg.angle().y();
     result.Roll_NS = msg.angle().z();
 
-    return result;
+    return make_ipc_msg(result);
 }
 
-MSG_VIDEO_FRAME convert(const msgs::Camera& msg) {
-    MSG_VIDEO_FRAME m;
+CameraMessage convert(const msgs::Camera& msg) {
+    MSG_JPEG_VIDEO_FRAME m;
+
+    cv::Mat frame(msg.frame().height(), msg.frame().width(),  CV_8UC3, (uchar   *)msg.frame().data().c_str());
+    cv::imwrite("image.png", frame);
+
+    std::vector<uchar> buff(frame.cols * frame.rows * 3);
+
+    std::vector<int> param = {CV_IMWRITE_JPEG_QUALITY, 100};
+    cv::imencode(".jpg", frame, buff, param);
+
+    std::shared_ptr<uchar> dyn_data(new uchar[buff.size()], std::default_delete<uchar[]>());
 
     m.camera_type = msg.camera_type() == msgs::Camera::FRONT ? CAMERA_FRONT : CAMERA_DOWN;
-    m.w = msg.frame().width();
-    m.h = msg.frame().height();
-    m.channels = 3;
-    m.size = m.w * m.h * m.channels;
-    m.frame = malloc(msg.frame().data().size());
-    memcpy(m.frame, msg.frame().data().c_str(), msg.frame().data().size());
+    m.frame_type = ORIGINAL_FRAME;
+    m.size = buff.size();
+    m.frame = dyn_data.get();
+    memcpy(m.frame, buff.data(), buff.size());
 
-    return m;
+    return make_ipc_msg(m, dyn_data);
 }

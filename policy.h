@@ -40,11 +40,11 @@ struct RegulConsts {
 using  RegulPolicy = IPCToGazeboPolicy<MSG_REGUL_TYPE, msgs::Regul, RegulConsts>;
 
 struct CameraConsts {
-    const char* IPC_NAME = MSG_VIDEO_FRAME_NAME;
-    const char* IPC_FORMAT = MSG_VIDEO_FRAME_FORMAT;
+    const char* IPC_NAME = MSG_JPEG_VIDEO_FRAME_NAME;
+    const char* IPC_FORMAT = MSG_JPEG_VIDEO_FRAME_FORMAT;
     const std::string TOPIC = "~/camera";
 };
-using CameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_VIDEO_FRAME, CameraConsts>;
+using CameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_JPEG_VIDEO_FRAME, CameraConsts>;
 
 struct NavigConsts {
     const char* IPC_NAME = MSG_NAVIG_NAME;

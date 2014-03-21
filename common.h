@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 
 #define SUCCESS    "Success"
 

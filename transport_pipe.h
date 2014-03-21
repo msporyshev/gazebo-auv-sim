@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <mutex>
 #include <string>
 #include <cerrno>
 
@@ -13,6 +14,9 @@
 #include "exception.h"
 #include "common.h"
 #include "convert.h"
+#include "ipc_message.h"
+
+std::mutex global_mutex;
 
 class AbstractPipe {};
 
@@ -55,11 +59,11 @@ public:
     }
 
     static void recieve_msg(MSG_INSTANCE msgRef, void *callData, void* clientData) {
+        std::lock_guard<std::mutex> lock(global_mutex);
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
         INFO() << "Recieved message of type: " << client->consts_.IPC_NAME;
-        MsgType *m;
-        IPC_unmarshall(client->msg_format, callData, (void **)&m);
+        auto m = new MsgType(*static_cast<MsgType *>(callData));
 
         client->callback_(*m);
 
@@ -83,6 +87,7 @@ public:
     }
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
+        std::lock_guard<std::mutex> lock(global_mutex);
         INFO() << "Recieved message from gazebo topic: " << subscriber_->GetTopic();
         this->callback_(*msg);
     }
@@ -120,9 +125,10 @@ public:
         IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT);
     }
 
-    void forward_msg(const MsgType& msg) {
+    template<typename DynData>
+    void forward_msg(const IPCMessage<MsgType, DynData>& msg) {
         INFO() << "Forwarding message to ipc: " << consts_.IPC_NAME;
-        auto fwd = msg;
+        auto fwd = msg.msg;
         IPC_publishData(consts_.IPC_NAME, &fwd);
     }
 private:
