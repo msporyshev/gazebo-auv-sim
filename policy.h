@@ -50,8 +50,8 @@ struct JpegCameraConsts {
 using JpegCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_JPEG_VIDEO_FRAME, JpegCameraConsts, uchar>;
 
 struct RawCameraConsts {
-    const char* IPC_NAME = MSG_JPEG_VIDEO_FRAME_NAME;
-    const char* IPC_FORMAT = MSG_JPEG_VIDEO_FRAME_FORMAT;
+    const char* IPC_NAME = MSG_VIDEO_FRAME_NAME;
+    const char* IPC_FORMAT = MSG_VIDEO_FRAME_FORMAT;
     const std::string TOPIC = "~/camera";
 };
 using RawCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_VIDEO_FRAME, RawCameraConsts, uchar>;
