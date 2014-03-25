@@ -3,16 +3,23 @@
 #include <msg_robosub.h>
 #include <memory>
 
+namespace msgs {
+namespace ipc {
+
 template<typename MsgType, typename DynData = uchar>
-struct IPCMessage {
+struct Message {
     MsgType msg;
     std::shared_ptr<DynData> dynamic_data;
-    IPCMessage(MsgType msg, std::shared_ptr<DynData> data = nullptr): msg(msg), dynamic_data(data) { }
+    Message(MsgType msg, std::shared_ptr<DynData> data = nullptr): msg(msg), dynamic_data(data) { }
 };
 
 template<typename MsgType, typename DynData = uchar>
-IPCMessage<MsgType, DynData> make_ipc_msg(const MsgType& msg, std::shared_ptr<DynData> data = nullptr) {
-    return IPCMessage<MsgType, DynData>(msg, data);
+Message<MsgType, DynData> make_msg(const MsgType& msg, std::shared_ptr<DynData> data = nullptr) {
+    return Message<MsgType, DynData>(msg, data);
 }
 
-using CameraMessage = IPCMessage<MSG_JPEG_VIDEO_FRAME, uchar>;
+using JpegCamera = Message<MSG_JPEG_VIDEO_FRAME, uchar>;
+using RawCamera = Message<MSG_VIDEO_FRAME, uchar>;
+
+} // namespace ipc
+} // namespace msgs

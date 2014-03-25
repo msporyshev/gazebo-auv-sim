@@ -87,8 +87,7 @@ public:
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
         std::lock_guard<std::mutex> lock(global_mutex);
-        DEBUG() << "Recieved message from gazebo topic: " << subscriber_->GetTopic() << std::endl
-            << msg->DebugString();
+        DEBUG() << "Recieved message from gazebo topic: " << subscriber_->GetTopic();
         this->callback_(*msg);
     }
 private:
@@ -126,8 +125,7 @@ public:
         IPC_defineMsg(consts_.IPC_NAME, IPC_VARIABLE_LENGTH, consts_.IPC_FORMAT);
     }
 
-    template<typename DynData>
-    void forward_msg(const IPCMessage<MsgType, DynData>& msg) {
+    void forward_msg(const MsgType& msg) {
         DEBUG() << "Forwarding message to ipc: " << consts_.IPC_NAME;
         auto fwd = msg.msg;
         IPC_publishData(consts_.IPC_NAME, &fwd);
@@ -145,7 +143,7 @@ public:
     { }
 
     void on_recieve(const typename PipePolicy::RecieveMsg& msg) {
-        forwarder_.forward_msg(convert(msg));
+        forwarder_.forward_msg(convert<typename PipePolicy::ForwardMsg>(msg));
     }
 
 private:

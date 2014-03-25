@@ -128,7 +128,8 @@ void init(int argc, char** argv) {
 
     pipes.emplace_back(new TransportPipe<RegulPolicy>(node));
     pipes.emplace_back(new TransportPipe<NavigPolicy>(node));
-    pipes.emplace_back(new TransportPipe<CameraPolicy>(node));
+    pipes.emplace_back(new TransportPipe<JpegCameraPolicy>(node));
+    pipes.emplace_back(new TransportPipe<RawCameraPolicy>(node));
 }
 
 void main_loop() {
