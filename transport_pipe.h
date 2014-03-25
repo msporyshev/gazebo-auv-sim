@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <mutex>
+#include <cstdio>
 #include <string>
 #include <cerrno>
 
@@ -38,8 +39,6 @@ protected:
     Callback<MsgType> callback_;
 };
 
-void recieve(MSG_INSTANCE msgRef, void *callData, void* clientData);
-
 template<typename MsgType, typename MsgConsts>
 class IPCReciever: public Reciever<MsgType> {
 public:
@@ -62,7 +61,7 @@ public:
         std::lock_guard<std::mutex> lock(global_mutex);
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
-        INFO() << "Recieved message of type: " << client->consts_.IPC_NAME;
+        DEBUG() << "Recieved message of type: " << client->consts_.IPC_NAME;
         auto m = new MsgType(*static_cast<MsgType *>(callData));
 
         client->callback_(*m);
@@ -88,7 +87,8 @@ public:
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
         std::lock_guard<std::mutex> lock(global_mutex);
-        INFO() << "Recieved message from gazebo topic: " << subscriber_->GetTopic();
+        DEBUG() << "Recieved message from gazebo topic: " << subscriber_->GetTopic() << std::endl
+            << msg->DebugString();
         this->callback_(*msg);
     }
 private:
@@ -111,6 +111,7 @@ public:
 
     void forward_msg(const MsgType& msg) {
         publisher_->Publish(msg);
+        DEBUG() << "Forwarding message: " << std::endl << msg.DebugString();
     }
 
 private:
@@ -127,7 +128,7 @@ public:
 
     template<typename DynData>
     void forward_msg(const IPCMessage<MsgType, DynData>& msg) {
-        INFO() << "Forwarding message to ipc: " << consts_.IPC_NAME;
+        DEBUG() << "Forwarding message to ipc: " << consts_.IPC_NAME;
         auto fwd = msg.msg;
         IPC_publishData(consts_.IPC_NAME, &fwd);
     }

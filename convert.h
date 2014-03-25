@@ -33,9 +33,9 @@ IPCMessage<MSG_NAVIG_TYPE> convert(const msgs::Navig& msg) {
     result.Y_KNS = msg.position().y();
     result.Depth_NS = -msg.position().z();
 
-    result.Fi_NS = msg.angle().x();
+    result.Roll_NS = msg.angle().x();
     result.Psi_NS = msg.angle().y();
-    result.Roll_NS = msg.angle().z();
+    result.Fi_NS = msg.angle().z();
 
     return make_ipc_msg(result);
 }
@@ -43,7 +43,11 @@ IPCMessage<MSG_NAVIG_TYPE> convert(const msgs::Navig& msg) {
 CameraMessage convert(const msgs::Camera& msg) {
     MSG_JPEG_VIDEO_FRAME m;
 
-    cv::Mat frame(msg.frame().height(), msg.frame().width(),  CV_8UC3, (uchar   *)msg.frame().data().c_str());
+    cv::Mat frame(
+        msg.frame().height(),
+        msg.frame().width(),
+        CV_8UC3,
+        const_cast<char*>(msg.frame().data().c_str()));
 
     std::vector<uchar> buff(frame.cols * frame.rows * 3);
 

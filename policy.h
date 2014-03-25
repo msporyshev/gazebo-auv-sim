@@ -14,6 +14,7 @@
 
 #include "transport_pipe.h"
 
+
 template<class RecieveMsgType, class ForwardMsgType, class Consts>
 struct IPCToGazeboPolicy {
     typedef RecieveMsgType RecieveMsg;
@@ -31,6 +32,7 @@ struct GazeboToIPCPolicy {
     typedef ForwardMsgType ForwardMsg;
     typedef IPCForwarder<ForwardMsg, Consts> ForwarderClass;
 };
+
 
 struct RegulConsts {
     const char* IPC_NAME = MSG_REGUL_NAME;
