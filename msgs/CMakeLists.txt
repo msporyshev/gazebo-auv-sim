@@ -1,3 +1,5 @@
+pkg_check_modules(GAZEBO gazebo)
+
 find_package(Protobuf REQUIRED)
 
 set(PROTOBUF_IMPORT_DIRS)
