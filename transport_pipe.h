@@ -11,6 +11,7 @@
 #include <gazebo/transport/transport.hh>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/scope_exit.hpp>
 
 #include "exception.h"
 #include "common.h"
@@ -49,8 +50,6 @@ public:
             THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
         }
 
-        msg_format = IPC_parseFormat(consts_.IPC_FORMAT);
-
         INFO() << "Subscribing to ipc message: " << consts_.IPC_NAME;
         if (IPC_subscribeData(consts_.IPC_NAME, recieve_msg, this) != IPC_OK) {
             THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
@@ -62,15 +61,15 @@ public:
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
         DEBUG() << "Recieved message of type: " << client->consts_.IPC_NAME;
-        auto m = new MsgType(*static_cast<MsgType *>(callData));
+        auto m = static_cast<MsgType *>(callData);
+
+        BOOST_SCOPE_EXIT((&IPC_freeData)(&IPC_msgInstanceFormatter)) {
+            IPC_freeData(IPC_msgInstanceFormatter(msgInstance), m);
+        } BOOST_SCOPE_EXIT_END
 
         client->callback_(*m);
-
-        IPC_freeByteArray(callData);
-        IPC_freeData(client->msg_format, m);
     }
 
-    FORMATTER_PTR msg_format;
     MsgConsts consts_;
 private:
 };
