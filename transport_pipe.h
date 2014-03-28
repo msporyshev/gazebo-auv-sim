@@ -11,7 +11,6 @@
 #include <gazebo/transport/transport.hh>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/scope_exit.hpp>
 
 #include "exception.h"
 #include "common.h"

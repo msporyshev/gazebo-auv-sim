@@ -31,7 +31,6 @@
 
 struct ScopeGuard {
     std::function<void (void)> on_scope_exit;
-    // ScopeGuard(std::function<void (void)> on_scope_exit): on_scope_exit(on_scope_exit) {}
     ~ScopeGuard(){ on_scope_exit(); }
 };
 

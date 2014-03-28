@@ -8,8 +8,6 @@
 
 #include <ipc.h>
 
-#include <boost/scope_exit.hpp>
-
 #ifdef USING_BOOST_LOG
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
