@@ -25,12 +25,12 @@ struct IPCToGazeboPolicy {
     typedef GazeboForwarder<ForwardMsg, Consts> ForwarderClass;
 };
 
-template<class RecieveMsgType, class ForwardMsgType, class Consts, class DynData = uchar>
+template<class RecieveMsgType, class ForwardMsgType, class Consts>
 struct GazeboToIPCPolicy {
     typedef RecieveMsgType RecieveMsg;
     typedef GazeboReciever<RecieveMsg, Consts> RecieverClass;
 
-    typedef msgs::ipc::Message<ForwardMsgType, DynData> ForwardMsg;
+    typedef msgs::ipc::Message<ForwardMsgType> ForwardMsg;
     typedef IPCForwarder<ForwardMsg, Consts> ForwarderClass;
 };
 
@@ -47,14 +47,14 @@ struct JpegCameraConsts {
     const char* IPC_FORMAT = MSG_JPEG_VIDEO_FRAME_FORMAT;
     const std::string TOPIC = "~/camera";
 };
-using JpegCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_JPEG_VIDEO_FRAME, JpegCameraConsts, uchar>;
+using JpegCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_JPEG_VIDEO_FRAME, JpegCameraConsts>;
 
 struct RawCameraConsts {
     const char* IPC_NAME = MSG_VIDEO_FRAME_NAME;
     const char* IPC_FORMAT = MSG_VIDEO_FRAME_FORMAT;
     const std::string TOPIC = "~/camera";
 };
-using RawCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_VIDEO_FRAME, RawCameraConsts, uchar>;
+using RawCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_VIDEO_FRAME, RawCameraConsts>;
 
 struct NavigConsts {
     const char* IPC_NAME = MSG_NAVIG_NAME;

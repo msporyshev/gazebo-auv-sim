@@ -7,6 +7,8 @@
 #include <gazebo/math/Vector3.hh>
 #include <gazebo/common/common.hh>
 
+#include <ipc.h>
+
 #include <msg_robosub.h>
 #include <msg_regul.h>
 #include <msg_navig.h>
@@ -48,7 +50,7 @@ msgs::Regul convert(const MSG_REGUL_TYPE& msg) {
 }
 
 template<>
-msgs::ipc::Message<MSG_NAVIG_TYPE, uchar> convert(const msgs::Navig& msg) {
+msgs::ipc::Message<MSG_NAVIG_TYPE> convert(const msgs::Navig& msg) {
     MSG_NAVIG_TYPE result;
 
     result.X_KNS = msg.position().x();
@@ -59,7 +61,7 @@ msgs::ipc::Message<MSG_NAVIG_TYPE, uchar> convert(const msgs::Navig& msg) {
     result.Psi_NS = msg.angle().y();  // дифферент
     result.Fi_NS = msg.angle().z();   // курс
 
-    return msgs::ipc::make_msg(result);
+    return msgs::ipc::make_msg(result, MSG_NAVIG_FORMAT);
 }
 
 template<>
@@ -68,17 +70,15 @@ msgs::ipc::RawCamera convert(const msgs::Camera& msg) {
 
     cv::Mat frame = frame_from_msg(msg);
 
-    std::shared_ptr<uchar> dyn_data(new uchar[msg.frame().data().size()], std::default_delete<uchar[]>());
-
     m.camera_type = msg.camera_type() == msgs::Camera::FRONT ? CAMERA_FRONT : CAMERA_DOWN;
     m.w = msg.frame().width();
     m.h = msg.frame().height();
     m.channels = 3;
     m.size = m.w * m.h * m.channels;
-    m.frame = dyn_data.get();
+    m.frame = new uchar[msg.frame().data().size()];
     memcpy(m.frame, frame.data, m.size);
 
-    return msgs::ipc::make_msg(m, dyn_data);
+    return msgs::ipc::make_msg(m, MSG_VIDEO_FRAME_FORMAT);
 }
 
 template<>
@@ -92,13 +92,11 @@ msgs::ipc::JpegCamera convert(const msgs::Camera& msg) {
     std::vector<int> param = {CV_IMWRITE_JPEG_QUALITY, 100};
     cv::imencode(".jpg", frame, buff, param);
 
-    std::shared_ptr<uchar> dyn_data(new uchar[buff.size()], std::default_delete<uchar[]>());
-
     m.camera_type = msg.camera_type() == msgs::Camera::FRONT ? CAMERA_FRONT : CAMERA_DOWN;
     m.frame_type = ORIGINAL_FRAME;
     m.size = buff.size();
-    m.frame = dyn_data.get();
+    m.frame = new uchar[buff.size()];
     memcpy(m.frame, buff.data(), buff.size());
 
-    return msgs::ipc::make_msg(m, dyn_data);
+    return msgs::ipc::make_msg(m, MSG_JPEG_VIDEO_FRAME_FORMAT);
 }

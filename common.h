@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 
 #define SUCCESS    "Success"
 
@@ -27,3 +28,14 @@
 #define FATAL()    WARNING()
 
 #endif
+
+struct ScopeGuard {
+    std::function<void (void)> on_scope_exit;
+    // ScopeGuard(std::function<void (void)> on_scope_exit): on_scope_exit(on_scope_exit) {}
+    ~ScopeGuard(){ on_scope_exit(); }
+};
+
+
+#define SCOPE_EXIT              \
+    ScopeGuard guard;           \
+    guard.on_scope_exit = [&]()

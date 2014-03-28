@@ -56,16 +56,16 @@ public:
         }
     }
 
-    static void recieve_msg(MSG_INSTANCE msgRef, void *callData, void* clientData) {
+    static void recieve_msg(MSG_INSTANCE msgInstance, void *callData, void* clientData) {
         std::lock_guard<std::mutex> lock(global_mutex);
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
         DEBUG() << "Recieved message of type: " << client->consts_.IPC_NAME;
-        auto m = static_cast<MsgType *>(callData);
+        auto m = static_cast<MsgType*>(callData);
 
-        BOOST_SCOPE_EXIT((&IPC_freeData)(&IPC_msgInstanceFormatter)) {
+        SCOPE_EXIT {
             IPC_freeData(IPC_msgInstanceFormatter(msgInstance), m);
-        } BOOST_SCOPE_EXIT_END
+        };
 
         client->callback_(*m);
     }
