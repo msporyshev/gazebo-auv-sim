@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="robosub_auv">
+    <!-- <physics>
+    </physics> -->
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <model name="box">
+      <pose>0 0 3 0 0 0</pose>
+      <link name="link">
+        <gravity>false</gravity>
+        <velocity_decay>
+          <linear>0.001</linear>
+          <angular>0.001</angular>
+        </velocity_decay>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://imtp_auv.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://imtp_auv.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <sensor name="front_camera" type="camera">
+          <update_rate>30</update_rate>
+
+          <pose>2 0 0.2 0 0 0</pose>
+          <plugin name="camera_plugin" filename="build/libcamera_plugin.so"></plugin>
+
+          <camera>
+            <image>
+              <width>400</width>
+              <height>300</height>
+              <!-- <format>BAYER_GRBG8</format> -->
+            </image>
+
+            <noise>
+              <mean>0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </camera>
+        </sensor>
+      </link>
+ -->
+      <plugin name="robosub_auv" filename="build/librobosub_auv_plugin.so" />
+    </model>
+  </world>
+</sdf>
