@@ -1,23 +1,20 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
   <world name="robosub_auv">
-    <!-- <physics>
-    </physics> -->
-    <!-- Ground Plane -->
-    <include>
-      <uri>model://ground_plane</uri>
-    </include>
     <include>
       <uri>model://sun</uri>
     </include>
     <model name="box">
-      <pose>0 0 3 0 0 0</pose>
+      <pose>0 0 -10 0 0 0</pose>
       <link name="link">
-        <gravity>false</gravity>
+        <gravity>true</gravity>
         <velocity_decay>
           <linear>0.001</linear>
           <angular>0.001</angular>
         </velocity_decay>
+        <inertial>
+          <mass>40</mass>
+        </inertial>
         <collision name="collision">
           <geometry>
             <mesh>
@@ -43,7 +40,7 @@
             <image>
               <width>400</width>
               <height>300</height>
-              <!-- <format>BAYER_GRBG8</format> -->
+
             </image>
 
             <noise>
@@ -53,7 +50,6 @@
           </camera>
         </sensor>
       </link>
- -->
       <plugin name="robosub_auv" filename="lib/librobosub_auv_plugin.so" />
     </model>
   </world>

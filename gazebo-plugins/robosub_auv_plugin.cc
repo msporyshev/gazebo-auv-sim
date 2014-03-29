@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <cmath>
 
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/transport/transport.hh>
@@ -59,8 +60,13 @@ namespace gazebo
     {
       this->model->GetLink("link")->SetForce(math::Vector3(0,0,0));
       this->model->GetLink("link")->SetTorque(math::Vector3(0,0,0));
-      this->model->GetLink("link")->AddRelativeForce(forceRatio * maxForce);
-      this->model->GetLink("link")->AddRelativeTorque(torqueRatio * maxTorque);
+
+
+
+      this->model->GetLink("link")->AddRelativeForce(
+        math::Vector3(0, 0, CurBuoyantForce(this->model->GetLink("link")->GetWorldCoGPose())));
+      this->model->GetLink("link")->AddRelativeForce(forceRatio * MAX_FORCE);
+      this->model->GetLink("link")->AddRelativeTorque(torqueRatio * MAX_TORQUE);
 
       if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME) {
         SendNavig(this->model->GetLink("link")->GetWorldCoGPose());
@@ -74,14 +80,31 @@ namespace gazebo
     }
 
   private:
-    static constexpr double NAVIG_UPDATE_TIME = 1;
+
+    static double CurBuoyantForce(const math::Pose& pose) {
+      if (pose.pos.z > SURFACE_H) {
+        double ratio = (AUV_H - (pose.pos.z - SURFACE_H)) / AUV_H;
+        ratio = fmax(ratio, 0);
+
+        return BUOYANT_FORCE * ratio;
+      } else {
+        return BUOYANT_FORCE;
+      }
+    }
+
+    static constexpr double NAVIG_UPDATE_TIME = 0.1;
 
     transport::NodePtr node;
     transport::SubscriberPtr regulSubscriber;
     transport::PublisherPtr navigPublisher;
 
+    static constexpr double BUOYANT_FORCE = 410;
+
     math::Vector3 forceRatio, torqueRatio;
-    double maxForce = 3, maxTorque = 3;
+    static constexpr double MAX_FORCE = 3, MAX_TORQUE = 3;
+
+    static constexpr double SURFACE_H = 0;
+    static constexpr double AUV_H = 1;
 
     physics::ModelPtr model;
 
@@ -89,7 +112,7 @@ namespace gazebo
 
     event::ConnectionPtr timerConnection;
     event::ConnectionPtr updateConnection;
-};
+  };
 
   GZ_REGISTER_MODEL_PLUGIN(ModelPush)
 }
