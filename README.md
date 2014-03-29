@@ -12,9 +12,9 @@ Simulation tools for Far Eastern Federal University autonomous underwater vehicl
 + protobuf >= 2.5.0
  
 ###Building:
-To use with Carnegie Mellon IPC messages adapter:
+To use with Carnegie Mellon IPC messages:
 ```bash
-export IPC_MSG_INCLUDE_DIR=<dirname> 
+export IPC_MSG_INCLUDE_DIR=<directory_with_ipc_messages> 
 ```
 
 To build with make:
@@ -22,21 +22,22 @@ To build with make:
 mkdir build
 cd build
 cmake ../ 
-make
+make install
 ``` 
 
 ###Usage:
+In build directory:
 ```bash
-cd ./gazebo-plugins
+cd ./launch
 gazebo robosub_auv.sdf
 ```
 
 To use with FEFU AUV ipc messages you need to run adapter:
 ```bash
-./ipc-gazebo-adapter/adapter
+./launch/bin/adapter
 ```
 
 To view adapter options:
 ```bash
-./ipc-gazebo-adapter/adapter --help
+./launch/bin/adapter --help
 ```
