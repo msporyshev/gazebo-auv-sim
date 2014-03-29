@@ -45,3 +45,9 @@ target_link_libraries(
 )
 
 add_dependencies(${PROJECT_NAME} adapter_msgs)
+
+if(!PROJECT_INSTALL_DIR)
+    set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+install(TARGETS adapter DESTINATION ${PROJECT_INSTALL_DIR}/bin)

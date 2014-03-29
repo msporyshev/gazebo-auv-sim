@@ -36,8 +36,8 @@
         <sensor name="front_camera" type="camera">
           <update_rate>30</update_rate>
 
-          <pose>2 0 0.2 0 0 0</pose>
-          <plugin name="camera_plugin" filename="build/libcamera_plugin.so"></plugin>
+          <pose>0 2 0.2 0 0 1.57</pose>
+          <plugin name="camera_plugin" filename="lib/libcamera_plugin.so"></plugin>
 
           <camera>
             <image>
@@ -54,7 +54,7 @@
         </sensor>
       </link>
  -->
-      <plugin name="robosub_auv" filename="build/librobosub_auv_plugin.so" />
+      <plugin name="robosub_auv" filename="lib/librobosub_auv_plugin.so" />
     </model>
   </world>
 </sdf>

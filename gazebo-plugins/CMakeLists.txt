@@ -27,3 +27,11 @@ target_link_libraries(robosub_auv_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} 
 
 add_library(camera_plugin SHARED camera_plugin.cc)
 target_link_libraries(camera_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} CameraPlugin adapter_msgs)
+
+
+if(!PROJECT_INSTALL_DIR)
+    set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+install(TARGETS camera_plugin robosub_auv_plugin DESTINATION ${PROJECT_INSTALL_DIR}/lib)
+install(FILES robosub_auv.sdf imtp_auv.dae DESTINATION ${PROJECT_INSTALL_DIR})
