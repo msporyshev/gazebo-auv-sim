@@ -42,6 +42,7 @@ target_link_libraries(
     ${PROTOBUF_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ipc
+    pthread
 )
 
 add_dependencies(${PROJECT_NAME} adapter_msgs)
