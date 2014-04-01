@@ -34,7 +34,7 @@
           <update_rate>30</update_rate>
 
           <pose>0 2 0.2 0 0 1.57</pose>
-          <plugin name="camera_plugin" filename="lib/libcamera_plugin.so"></plugin>
+          <plugin name="camera_plugin" filename="gazebo-plugins/libcamera_plugin.so"></plugin>
 
           <camera>
             <image>
@@ -53,7 +53,7 @@
           <update_rate>30</update_rate>
 
           <pose>0 2 0.2 0 1.57 1.57</pose>
-          <plugin name="camera_plugin" filename="lib/libcamera_plugin.so"></plugin>
+          <plugin name="camera_plugin" filename="gazebo-plugins/libcamera_plugin.so"></plugin>
 
           <camera>
             <image>
@@ -69,7 +69,7 @@
           </camera>
         </sensor>
       </link>
-      <plugin name="robosub_auv" filename="lib/librobosub_auv_plugin.so" />
+      <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
     </model>
   </world>
 </sdf>

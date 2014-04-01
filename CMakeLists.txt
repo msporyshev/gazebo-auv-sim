@@ -5,7 +5,7 @@ include (FindBoost)
 
 add_definitions(--std=c++11 -DROBOSUB_AUV -Wall -O3 -fPIC)
 
-set(PROJECT_INSTALL_DIR ${PROJECT_BINARY_DIR}/launch)
+set(PROJECT_INSTALL_DIR ${PROJECT_BINARY_DIR})
 
 include_directories(${PROJECT_BINARY_DIR}/msgs)
 link_directories(${PROJECT_BINARY_DIR}/msgs)

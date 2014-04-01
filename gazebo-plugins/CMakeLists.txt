@@ -33,5 +33,4 @@ if(!PROJECT_INSTALL_DIR)
     set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-install(TARGETS camera_plugin robosub_auv_plugin DESTINATION ${PROJECT_INSTALL_DIR}/lib)
 install(FILES robosub_auv.sdf imtp_auv.dae DESTINATION ${PROJECT_INSTALL_DIR})
