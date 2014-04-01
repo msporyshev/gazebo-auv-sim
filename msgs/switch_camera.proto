@@ -1,0 +1,6 @@
+package msgs;
+import "camera.proto";
+
+message SwitchCamera {
+    required Camera.CameraType camera_type = 2;
+}

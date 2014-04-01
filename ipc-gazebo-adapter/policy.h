@@ -63,3 +63,9 @@ struct NavigConsts {
 };
 using NavigPolicy = GazeboToIPCPolicy<msgs::Navig, MSG_NAVIG_TYPE, NavigConsts>;
 
+struct SwitchCameraConsts {
+    const char* IPC_NAME = MSG_SWITCH_CAMERA_NAME;
+    const char* IPC_FORMAT = MSG_SWITCH_CAMERA_FORMAT;
+    const std::string TOPIC = "~/switch_camera";
+};
+using SwitchCameraPolicy = IPCToGazeboPolicy<MSG_SWITCH_CAMERA, msgs::SwitchCamera, SwitchCameraConsts>;

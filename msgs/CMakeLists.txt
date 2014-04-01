@@ -13,6 +13,7 @@ set(msgs
   regul.proto
   navig.proto
   camera.proto
+  switch_camera.proto
   ${PROTOBUF_IMPORT_DIRS}/vector3d.proto
   ${PROTOBUF_IMPORT_DIRS}/image.proto
   ${PROTOBUF_IMPORT_DIRS}/header.proto
@@ -22,7 +23,7 @@ set(msgs
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/msgs)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
-set(MSG_SRCS regul.pb.cc navig.pb.cc camera.pb.cc vector3d.pb.h time.pb.h header.pb.h image.pb.h)
+set(MSG_SRCS regul.pb.cc navig.pb.cc camera.pb.cc switch_camera.pb.cc  vector3d.pb.h time.pb.h header.pb.h image.pb.h)
 add_library(adapter_msgs STATIC ${MSG_SRCS})
 target_link_libraries(adapter_msgs ${PROTOBUF_LIBRARIES} ${GAZEBO_LIBRARIES})
 

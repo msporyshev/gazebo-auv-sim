@@ -49,6 +49,25 @@
             </noise>
           </camera>
         </sensor>
+        <sensor name="bottom_camera" type="camera">
+          <update_rate>30</update_rate>
+
+          <pose>0 2 0.2 0 -1.57 1.57</pose>
+          <plugin name="camera_plugin" filename="lib/libcamera_plugin.so"></plugin>
+
+          <camera>
+            <image>
+              <width>400</width>
+              <height>300</height>
+
+            </image>
+
+            <noise>
+              <mean>0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </camera>
+        </sensor>
       </link>
       <plugin name="robosub_auv" filename="lib/librobosub_auv_plugin.so" />
     </model>

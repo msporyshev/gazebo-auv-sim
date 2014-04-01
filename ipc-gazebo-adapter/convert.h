@@ -16,6 +16,7 @@
 #include <regul.pb.h>
 #include <navig.pb.h>
 #include <camera.pb.h>
+#include <switch_camera.pb.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -99,4 +100,10 @@ msgs::ipc::JpegCamera convert(const msgs::Camera& msg) {
     memcpy(m.frame, buff.data(), buff.size());
 
     return msgs::ipc::make_msg(m, MSG_JPEG_VIDEO_FRAME_FORMAT);
+}
+
+template<>
+msgs::SwitchCamera convert(const MSG_SWITCH_CAMERA& msg) {
+    msgs::SwitchCamera result;
+    result.set_camera_type(msg.camera_type == CAMERA_FRONT ? msgs::Camera::FRONT : msgs::Camera::DOWN);
 }

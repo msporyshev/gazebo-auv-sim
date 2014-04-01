@@ -4,7 +4,10 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 
+#include <boost/shared_ptr.hpp>
+
 #include <camera.pb.h>
+#include <switch_camera.pb.h>
 
 namespace gazebo
 {
@@ -16,6 +19,8 @@ public:
   void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
   {
     CameraPlugin::Load(_parent, _sdf);
+    this->sensor = _parent;
+    this->type = _parent->GetName() == "front_camera" ? ::msgs::Camera::FRONT : ::msgs::Camera::DOWN;
 
     this->node = transport::NodePtr(new transport::Node());
 
@@ -23,27 +28,43 @@ public:
 
     this->cameraPublisher = node->Advertise< ::msgs::Camera>("~/camera");
     gzmsg << "Advertised to topic: " << cameraPublisher->GetTopic();
+
+    this->switchCameraSub = node->Subscribe<::msgs::SwitchCamera>(
+      "~/switch_camera",
+      &CameraPublisher::RecieveSwitchCamera, this);
+    gzmsg << "Subscribed to topic: " << this->switchCameraSub->GetTopic();
   }
 
-  public: void OnNewFrame(
+  void OnNewFrame(
       const unsigned char *_image,
       unsigned int _width, unsigned int _height, unsigned int _depth,
       const std::string &_format)
   {
+    if (this->workingCameraType != this->type) {
+      return;
+    }
+
     common::Image image;
     image.SetFromData(_image, _width, _height, common::Image::ConvertPixelFormat(_format));
 
     ::msgs::Camera cameraMsg;
     msgs::Set(cameraMsg.mutable_frame(), image);
 
-    cameraMsg.set_camera_type(::msgs::Camera::FRONT);
+    cameraMsg.set_camera_type(type);
 
     this->cameraPublisher->Publish(cameraMsg);
   }
 
+  void RecieveSwitchCamera(const boost::shared_ptr<const ::msgs::SwitchCamera>& msg) {
+    this->workingCameraType = msg->camera_type();
+  }
+
 private:
+  sensors::SensorPtr sensor;
+  ::msgs::Camera::CameraType type, workingCameraType = ::msgs::Camera::FRONT;
   transport::NodePtr node;
   transport::PublisherPtr cameraPublisher;
+  transport::SubscriberPtr switchCameraSub;
 };
 
 GZ_REGISTER_SENSOR_PLUGIN(CameraPublisher)
