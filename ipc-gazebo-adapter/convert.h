@@ -16,7 +16,6 @@
 #include <regul.pb.h>
 #include <navig.pb.h>
 #include <camera.pb.h>
-// #include <switch_camera.pb.h>
 
 #include <opencv2/opencv.hpp>
 
