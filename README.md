@@ -1,4 +1,4 @@
-gazebo-auv-env
+gazebo-auv-sim
 ==============
 
 Simulation tools for Far Eastern Federal University autonomous underwater vehicle.
