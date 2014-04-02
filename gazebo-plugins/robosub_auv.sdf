@@ -5,7 +5,7 @@
       <uri>model://sun</uri>
     </include>
     <model name="box">
-      <pose>0 0 -10 0 0 0</pose>
+      <pose>0 0 0 0 0 0</pose>
       <link name="link">
         <gravity>true</gravity>
         <velocity_decay>

@@ -68,4 +68,4 @@ struct SwitchCameraConsts {
     const char* IPC_FORMAT = MSG_SWITCH_CAMERA_FORMAT;
     const std::string TOPIC = "~/switch_camera";
 };
-using SwitchCameraPolicy = IPCToGazeboPolicy<MSG_SWITCH_CAMERA, msgs::SwitchCamera, SwitchCameraConsts>;
+using SwitchCameraPolicy = IPCToGazeboPolicy<MSG_SWITCH_CAMERA, msgs::Camera, SwitchCameraConsts>;

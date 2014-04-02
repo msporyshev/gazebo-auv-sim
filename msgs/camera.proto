@@ -2,11 +2,12 @@ package msgs;
 import "image.proto";
 
 message Camera {
-    required gazebo.msgs.Image frame = 1;
-
     enum CameraType {
         FRONT = 0;
         DOWN = 1;
     }
-    required CameraType camera_type = 2;
+
+    required CameraType camera_type = 1;
+
+    optional gazebo.msgs.Image frame = 2;
 }

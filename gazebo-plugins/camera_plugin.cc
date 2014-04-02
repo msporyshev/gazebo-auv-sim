@@ -7,7 +7,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <camera.pb.h>
-#include <switch_camera.pb.h>
 
 namespace gazebo
 {
@@ -29,7 +28,7 @@ public:
     this->cameraPublisher = node->Advertise< ::msgs::Camera>("~/camera");
     gzmsg << "Advertised to topic: " << cameraPublisher->GetTopic();
 
-    this->switchCameraSub = node->Subscribe<::msgs::SwitchCamera>(
+    this->switchCameraSub = node->Subscribe<::msgs::Camera>(
       "~/switch_camera",
       &CameraPublisher::RecieveSwitchCamera, this);
     gzmsg << "Subscribed to topic: " << this->switchCameraSub->GetTopic();
@@ -55,7 +54,7 @@ public:
     this->cameraPublisher->Publish(cameraMsg);
   }
 
-  void RecieveSwitchCamera(const boost::shared_ptr<const ::msgs::SwitchCamera>& msg) {
+  void RecieveSwitchCamera(const boost::shared_ptr<const ::msgs::Camera>& msg) {
     this->workingCameraType = msg->camera_type();
   }
 
