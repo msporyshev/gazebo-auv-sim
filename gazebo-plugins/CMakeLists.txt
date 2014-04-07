@@ -33,4 +33,4 @@ if(!PROJECT_INSTALL_DIR)
     set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-install(FILES robosub_auv.sdf imtp_auv.dae DESTINATION ${PROJECT_INSTALL_DIR})
+install(FILES robosub_auv.sdf DESTINATION ${PROJECT_INSTALL_DIR})
