@@ -35,19 +35,21 @@ public:
   }
 
   void OnNewFrame(
-      const unsigned char *_image,
-      unsigned int _width, unsigned int _height, unsigned int _depth,
-      const std::string &_format)
+      const unsigned char *data,
+      unsigned int width, unsigned int height, unsigned int depth,
+      const std::string &format)
   {
     if (this->workingCameraType != this->type) {
       return;
     }
-
-    common::Image image;
-    image.SetFromData(_image, _width, _height, common::Image::ConvertPixelFormat(_format));
-
     ::msgs::Camera cameraMsg;
-    msgs::Set(cameraMsg.mutable_frame(), image);
+
+    msgs::Image* frame = cameraMsg.mutable_frame();
+    frame->set_data(data, width * height * depth);
+    frame->set_width(width);
+    frame->set_height(height);
+    frame->set_step(width * depth);
+    frame->set_pixel_format(common::Image::ConvertPixelFormat(format));
 
     cameraMsg.set_camera_type(type);
 
@@ -64,6 +66,7 @@ private:
   transport::NodePtr node;
   transport::PublisherPtr cameraPublisher;
   transport::SubscriberPtr switchCameraSub;
+
 };
 
 GZ_REGISTER_SENSOR_PLUGIN(CameraPublisher)
