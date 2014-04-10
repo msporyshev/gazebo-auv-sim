@@ -10,6 +10,7 @@ Simulation tools for Far Eastern Federal University autonomous underwater vehicl
 + pkg-config
 + gazebo >= 1.9
 + protobuf >= 2.5.0
++ OpenCV >= 2.4 (need for adapter)
  
 ###Building:
 To use with Carnegie Mellon IPC messages:
@@ -28,16 +29,15 @@ make install
 ###Usage:
 In build directory:
 ```bash
-cd ./launch
 gazebo robosub_auv.sdf
 ```
 
 To use with FEFU AUV ipc messages you need to run adapter:
 ```bash
-./launch/bin/adapter
+./bin/adapter
 ```
 
 To view adapter options:
 ```bash
-./launch/bin/adapter --help
+./bin/adapter --help
 ```
