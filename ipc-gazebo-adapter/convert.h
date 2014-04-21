@@ -12,10 +12,12 @@
 #include <msg_robosub.h>
 #include <msg_regul.h>
 #include <msg_navig.h>
+#include <msg_compass.h>
 
 #include <regul.pb.h>
 #include <navig.pb.h>
 #include <camera.pb.h>
+#include <compass.pb.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -62,6 +64,28 @@ msgs::ipc::Message<MSG_NAVIG_TYPE> convert(const msgs::Navig& msg) {
     result.Fi_NS = msg.angle().z();   // курс
 
     return msgs::ipc::make_msg(result, MSG_NAVIG_FORMAT);
+}
+
+template<>
+msgs::ipc::Message<MSG_COMPASS_TYPE> convert(const msgs::Compass& msg) {
+    MSG_COMPASS_TYPE result;
+    result.time = msg.time();
+
+    result.state = 0;
+
+    result.roll = msg.orientation().x();
+    result.pitch = msg.orientation().y();
+    result.heading = msg.orientation().z();
+
+    result.roll_rate = msg.angular_vel().x();
+    result.pitch_rate = msg.angular_vel().y();
+    result.head_rate = msg.angular_vel().z();
+
+    result.accX = msg.linear_accel().x();
+    result.accY = msg.linear_accel().y();
+    result.accZ = msg.linear_accel().z();
+
+    return msgs::ipc::make_msg(result, MSG_COMPASS_FORMAT);
 }
 
 template<>

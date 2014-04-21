@@ -1,0 +1,9 @@
+package msgs;
+import "vector3d.proto";
+
+message Compass {
+    required gazebo.msgs.Vector3d orientation = 1;
+    required gazebo.msgs.Vector3d angular_vel = 2;
+    required gazebo.msgs.Vector3d linear_accel = 3;
+    required double time = 4;
+}

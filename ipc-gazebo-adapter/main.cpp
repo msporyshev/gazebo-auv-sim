@@ -8,6 +8,9 @@
 
 #include <ipc.h>
 
+#include <boost/fusion/include/vector.hpp>
+#include <boost/fusion/include/for_each.hpp>
+
 #ifdef USING_BOOST_LOG
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -33,6 +36,8 @@ namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
 
 namespace {
+
+boost::fusion::vector<RegulPolicy, CompassPolicy, JpegCameraPolicy, RawCameraPolicy, SwitchCameraPolicy> policies;
 
 template<typename PipePolicy>
 using  TransportPipePtr = std::shared_ptr<TransportPipe<PipePolicy> >;
@@ -116,6 +121,22 @@ void gazebo_init(int argc, char** argv) {
     node->Init(adapter_params.topic_namespace);
 }
 
+template<typename Policy>
+void add_pipe(gztransport::NodePtr node, Policy policy_tag = Policy()) {
+    pipes.emplace_back(new TransportPipe<Policy>(node));
+}
+
+struct AddPipe {
+    AddPipe(gztransport::NodePtr node): node(node) {}
+
+    template<typename Policy>
+    void operator() (Policy& policy_tag) const {
+        add_pipe(node, policy_tag);
+    }
+
+    gztransport::NodePtr node;
+};
+
 void init(int argc, char** argv) {
     program_options_init(argc, argv);
 
@@ -124,11 +145,7 @@ void init(int argc, char** argv) {
     gazebo_init(argc, argv);
     ipc_init();
 
-    pipes.emplace_back(new TransportPipe<RegulPolicy>(node));
-    pipes.emplace_back(new TransportPipe<NavigPolicy>(node));
-    pipes.emplace_back(new TransportPipe<JpegCameraPolicy>(node));
-    pipes.emplace_back(new TransportPipe<RawCameraPolicy>(node));
-    pipes.emplace_back(new TransportPipe<SwitchCameraPolicy>(node));
+    boost::fusion::for_each(policies, AddPipe(node));
 }
 
 void main_loop() {

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 include (FindPkgConfig)
 include (FindBoost)
 
-add_definitions(--std=c++11 -DROBOSUB_AUV -Wall -O3 -fPIC)
+add_definitions(--std=c++11 -DROBOSUB_AUV -Wall -fPIC)
 
 set(PROJECT_INSTALL_DIR ${PROJECT_BINARY_DIR})
 

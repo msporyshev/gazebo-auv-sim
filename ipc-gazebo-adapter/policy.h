@@ -7,10 +7,12 @@
 #include <msg_regul.h>
 #include <msg_robosub.h>
 #include <msg_navig.h>
+#include <msg_compass.h>
 
 #include <regul.pb.h>
 #include <navig.pb.h>
 #include <camera.pb.h>
+#include <compass.pb.h>
 
 #include "transport_pipe.h"
 #include "ipc_message.h"
@@ -69,3 +71,10 @@ struct SwitchCameraConsts {
     const std::string TOPIC = "~/switch_camera";
 };
 using SwitchCameraPolicy = IPCToGazeboPolicy<MSG_SWITCH_CAMERA, msgs::Camera, SwitchCameraConsts>;
+
+struct CompassConsts {
+    const char* IPC_NAME = MSG_COMPASS_NAME;
+    const char* IPC_FORMAT = MSG_COMPASS_FORMAT;
+    const std::string TOPIC = "~/imu";
+};
+using CompassPolicy = GazeboToIPCPolicy<msgs::Compass, MSG_COMPASS_TYPE, CompassConsts>;

@@ -28,6 +28,8 @@ target_link_libraries(robosub_auv_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} 
 add_library(camera_plugin SHARED camera_plugin.cc)
 target_link_libraries(camera_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} CameraPlugin adapter_msgs)
 
+add_library(imu_plugin SHARED imu_plugin.cc)
+target_link_libraries(imu_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} adapter_msgs)
 
 if(!PROJECT_INSTALL_DIR)
     set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
