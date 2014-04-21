@@ -46,7 +46,7 @@
           <update_rate>10</update_rate>
           <pose>0 2 0.2 0 0 0</pose>
 
-          <plugin name="imu_plugin" filename="gazebo-plugins/libimu_plugin.so"></plugin>
+          <!-- <plugin name="imu_plugin" filename="gazebo-plugins/libimu_plugin.so"></plugin> -->
 
           <imu>
             <noise>

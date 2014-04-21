@@ -37,7 +37,7 @@ namespace gztransport = gazebo::transport;
 
 namespace {
 
-boost::fusion::vector<RegulPolicy, CompassPolicy, JpegCameraPolicy, RawCameraPolicy, SwitchCameraPolicy> policies;
+boost::fusion::vector<RegulPolicy, NavigPolicy, CompassPolicy, JpegCameraPolicy, RawCameraPolicy, SwitchCameraPolicy> policies;
 
 template<typename PipePolicy>
 using  TransportPipePtr = std::shared_ptr<TransportPipe<PipePolicy> >;
@@ -150,7 +150,7 @@ void init(int argc, char** argv) {
 
 void main_loop() {
     while (true) {
-        IPC_listenClear(0);
+        IPC_listenClear(10);
         gazebo::common::Time::MSleep(10);
     }
 }

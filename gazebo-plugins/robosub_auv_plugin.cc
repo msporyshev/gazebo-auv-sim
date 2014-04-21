@@ -69,7 +69,7 @@ namespace gazebo
       this->model->GetLink("link")->AddRelativeTorque(torqueRatio * MAX_TORQUE);
 
       if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME) {
-        // SendNavig(this->model->GetLink("link")->GetWorldCoGPose());
+        SendNavig(this->model->GetLink("link")->GetWorldCoGPose());
       }
     }
 

@@ -56,6 +56,7 @@ public:
     }
 
     static void recieve_msg(MSG_INSTANCE msgInstance, void *callData, void* clientData) {
+        std::lock_guard<std::mutex> lock(global_mutex);
         auto client = static_cast<const IPCReciever<MsgType, MsgConsts>*>(clientData);
 
         DEBUG() << "Recieved message of type: " << client->consts_.IPC_NAME;
@@ -83,6 +84,7 @@ public:
     }
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
+        std::lock_guard<std::mutex> lock(global_mutex);
         DEBUG() << "Recieved message from gazebo topic: " << subscriber_->GetTopic();
         this->callback_(*msg);
     }
