@@ -18,10 +18,11 @@
 
 #include "transport_pipe.h"
 #include "ipc_message.h"
-#include "globals.h"
 
 #define REGISTER_POLICY(Name, PolicyType, RecieveMsg, ForwardMsg, Consts) \
 PolicyRegistrator<PolicyType<RecieveMsg, ForwardMsg, Consts> > Name##____(#Name);
+
+extern std::map<std::string, std::unique_ptr<AbstractPipe> > pipe_by_name;
 
 template<typename Policy>
 class PolicyRegistrator {

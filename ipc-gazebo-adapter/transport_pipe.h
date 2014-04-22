@@ -17,8 +17,8 @@
 #include "common.h"
 #include "convert.h"
 #include "ipc_message.h"
-#include "globals.h"
 
+extern std::mutex global_mutex;
 
 class AbstractPipe {
 public:

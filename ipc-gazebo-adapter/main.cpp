@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <cerrno>
+#include <mutex>
 
 #include <ipc.h>
 
@@ -27,10 +28,11 @@ typedef std::string LogLevel;
 #include "common.h"
 #include "policy.h"
 #include "transport_pipe.h"
-#include "globals.h"
 
 namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
+
+std::mutex global_mutex;
 
 namespace {
 
@@ -45,6 +47,7 @@ struct AdapterParams {
 } adapter_params;
 
 gztransport::NodePtr node;
+
 
 template<typename T>
 void load_param(const po::variables_map& vm, std::string name, T& param) {
