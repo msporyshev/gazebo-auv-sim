@@ -32,7 +32,7 @@ link_directories(
     ${OpenCV_LIBRARY_DIRS}
 )
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp policy.cpp convert.cpp globals.cpp)
 target_link_libraries(
     ${PROJECT_NAME}
     adapter_msgs

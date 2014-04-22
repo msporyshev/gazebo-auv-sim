@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <map>
+#include <memory>
 
 #include <gazebo/msgs/msgs.hh>
 
@@ -16,7 +18,18 @@
 
 #include "transport_pipe.h"
 #include "ipc_message.h"
+#include "globals.h"
 
+#define REGISTER_POLICY(Name, PolicyType, RecieveMsg, ForwardMsg, Consts) \
+PolicyRegistrator<PolicyType<RecieveMsg, ForwardMsg, Consts> > Name##____(#Name);
+
+template<typename Policy>
+class PolicyRegistrator {
+public:
+    PolicyRegistrator(std::string name) {
+        pipe_by_name[name] = std::unique_ptr<AbstractPipe>(new TransportPipe<Policy>());
+    }
+};
 
 template<class RecieveMsgType, class ForwardMsgType, class Consts>
 struct IPCToGazeboPolicy {
@@ -35,46 +48,3 @@ struct GazeboToIPCPolicy {
     typedef msgs::ipc::Message<ForwardMsgType> ForwardMsg;
     typedef IPCForwarder<ForwardMsg, Consts> ForwarderClass;
 };
-
-
-struct RegulConsts {
-    const char* IPC_NAME = MSG_REGUL_NAME;
-    const char* IPC_FORMAT = MSG_REGUL_FORMAT;
-    const std::string TOPIC = "~/regul";
-};
-using  RegulPolicy = IPCToGazeboPolicy<MSG_REGUL_TYPE, msgs::Regul, RegulConsts>;
-
-struct JpegCameraConsts {
-    const char* IPC_NAME = MSG_JPEG_VIDEO_FRAME_NAME;
-    const char* IPC_FORMAT = MSG_JPEG_VIDEO_FRAME_FORMAT;
-    const std::string TOPIC = "~/camera";
-};
-using JpegCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_JPEG_VIDEO_FRAME, JpegCameraConsts>;
-
-struct RawCameraConsts {
-    const char* IPC_NAME = MSG_VIDEO_FRAME_NAME;
-    const char* IPC_FORMAT = MSG_VIDEO_FRAME_FORMAT;
-    const std::string TOPIC = "~/camera";
-};
-using RawCameraPolicy = GazeboToIPCPolicy<msgs::Camera, MSG_VIDEO_FRAME, RawCameraConsts>;
-
-struct NavigConsts {
-    const char* IPC_NAME = MSG_NAVIG_NAME;
-    const char* IPC_FORMAT = MSG_NAVIG_FORMAT;
-    const std::string TOPIC = "~/navig";
-};
-using NavigPolicy = GazeboToIPCPolicy<msgs::Navig, MSG_NAVIG_TYPE, NavigConsts>;
-
-struct SwitchCameraConsts {
-    const char* IPC_NAME = MSG_SWITCH_CAMERA_NAME;
-    const char* IPC_FORMAT = MSG_SWITCH_CAMERA_FORMAT;
-    const std::string TOPIC = "~/switch_camera";
-};
-using SwitchCameraPolicy = IPCToGazeboPolicy<MSG_SWITCH_CAMERA, msgs::Camera, SwitchCameraConsts>;
-
-struct CompassConsts {
-    const char* IPC_NAME = MSG_COMPASS_NAME;
-    const char* IPC_FORMAT = MSG_COMPASS_FORMAT;
-    const std::string TOPIC = "~/imu";
-};
-using CompassPolicy = GazeboToIPCPolicy<msgs::Compass, MSG_COMPASS_TYPE, CompassConsts>;

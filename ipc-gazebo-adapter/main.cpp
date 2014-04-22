@@ -8,9 +8,6 @@
 
 #include <ipc.h>
 
-#include <boost/fusion/include/vector.hpp>
-#include <boost/fusion/include/for_each.hpp>
-
 #ifdef USING_BOOST_LOG
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -30,14 +27,12 @@ typedef std::string LogLevel;
 #include "common.h"
 #include "policy.h"
 #include "transport_pipe.h"
-
+#include "globals.h"
 
 namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
 
 namespace {
-
-boost::fusion::vector<RegulPolicy, NavigPolicy, CompassPolicy, JpegCameraPolicy, RawCameraPolicy, SwitchCameraPolicy> policies;
 
 template<typename PipePolicy>
 using  TransportPipePtr = std::shared_ptr<TransportPipe<PipePolicy> >;
@@ -49,7 +44,6 @@ struct AdapterParams {
     LogLevel log_level = DEFAULT_LEVEL;
 } adapter_params;
 
-std::list<std::shared_ptr<AbstractPipe> > pipes;
 gztransport::NodePtr node;
 
 template<typename T>
@@ -121,22 +115,6 @@ void gazebo_init(int argc, char** argv) {
     node->Init(adapter_params.topic_namespace);
 }
 
-template<typename Policy>
-void add_pipe(gztransport::NodePtr node, Policy policy_tag = Policy()) {
-    pipes.emplace_back(new TransportPipe<Policy>(node));
-}
-
-struct AddPipe {
-    AddPipe(gztransport::NodePtr node): node(node) {}
-
-    template<typename Policy>
-    void operator() (Policy& policy_tag) const {
-        add_pipe(node, policy_tag);
-    }
-
-    gztransport::NodePtr node;
-};
-
 void init(int argc, char** argv) {
     program_options_init(argc, argv);
 
@@ -145,7 +123,11 @@ void init(int argc, char** argv) {
     gazebo_init(argc, argv);
     ipc_init();
 
-    boost::fusion::for_each(policies, AddPipe(node));
+    // TODO загружать названия из конфига
+    for (auto& pair : pipe_by_name) {
+        INFO() << "Starting pipe: " << pair.first;
+        pair.second->run(node);
+    }
 }
 
 void main_loop() {

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>
 #include <cerrno>
+#include <memory>
 
 #include <ipc.h>
 
@@ -16,10 +17,15 @@
 #include "common.h"
 #include "convert.h"
 #include "ipc_message.h"
+#include "globals.h"
 
-std::mutex global_mutex;
 
-class AbstractPipe {};
+class AbstractPipe {
+public:
+    virtual void run(gazebo::transport::NodePtr node) = 0;
+    virtual void stop() = 0;
+    virtual bool is_running() = 0;
+};
 
 template<typename MsgType>
 using Callback = std::function<void (const MsgType&)>;
@@ -135,16 +141,27 @@ private:
 template<typename PipePolicy>
 class TransportPipe: public AbstractPipe {
 public:
-    TransportPipe(gazebo::transport::NodePtr node)
-        : reciever_([&](const typename PipePolicy::RecieveMsg& msg) {this->on_recieve(msg);}, node)
-        , forwarder_(node)
-    { }
+    virtual void run(gazebo::transport::NodePtr node) override {
+        reciever_ = std::make_shared<typename PipePolicy::RecieverClass>(
+            [&](const typename PipePolicy::RecieveMsg& msg) {this->on_recieve(msg);}, node);
+
+        forwarder_ = std::make_shared<typename PipePolicy::ForwarderClass>(node);
+    }
+
+    virtual bool is_running() override {
+        return forwarder_ && reciever_;
+    }
+
+    virtual void stop() override {
+        reciever_.reset();
+        forwarder_.reset();
+    }
 
     void on_recieve(const typename PipePolicy::RecieveMsg& msg) {
-        forwarder_.forward_msg(convert<typename PipePolicy::ForwardMsg>(msg));
+        forwarder_->forward_msg(convert<typename PipePolicy::ForwardMsg>(msg));
     }
 
 private:
-    typename PipePolicy::RecieverClass reciever_;
-    typename PipePolicy::ForwarderClass forwarder_;
+    std::shared_ptr<typename PipePolicy::RecieverClass> reciever_;
+    std::shared_ptr<typename PipePolicy::ForwarderClass> forwarder_;
 };
