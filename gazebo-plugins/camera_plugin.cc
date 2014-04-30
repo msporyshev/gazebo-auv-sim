@@ -62,7 +62,7 @@ public:
 
 private:
   sensors::SensorPtr sensor;
-  ::msgs::Camera::CameraType type, workingCameraType = ::msgs::Camera::FRONT;
+  ::msgs::Camera::CameraType type, workingCameraType = ::msgs::Camera::DOWN;
   transport::NodePtr node;
   transport::PublisherPtr cameraPublisher;
   transport::SubscriberPtr switchCameraSub;

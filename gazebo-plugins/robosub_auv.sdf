@@ -5,6 +5,22 @@
       <uri>model://sun</uri>
     </include>
 
+    <model name="orange_stripe">
+      <static>true</static>
+      <link name="orange_stripe_link">
+        <pose>0 0 -4 0 0 0</pose>
+
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://orange_stripe.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+
+    </model>
+
     <model name="box">
 
       <link name="link">
