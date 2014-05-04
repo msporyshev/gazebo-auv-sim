@@ -35,4 +35,4 @@ if(!PROJECT_INSTALL_DIR)
     set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-install(FILES orange_stripe.dae robosub_auv.sdf DESTINATION ${PROJECT_INSTALL_DIR})
+install(FILES torpedo.dae orange_stripe.dae robosub_auv.sdf DESTINATION ${PROJECT_INSTALL_DIR})

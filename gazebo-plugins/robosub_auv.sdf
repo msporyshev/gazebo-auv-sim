@@ -22,8 +22,47 @@
     </model>
 
     <model name="box">
+      <link name="left_torpedo_link">
+        <gravity>false</gravity>
+        <pose>-1 0 0 -1.54 0 0</pose>
 
-      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://torpedo.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://torpedo.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="right_torpedo_link">
+        <pose>1 0 0 -1.54 0 0</pose>
+
+        <gravity>false</gravity>
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://torpedo.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://torpedo.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="auv_body_link">
         <pose>0 0 0 0 0 0</pose>
         <gravity>true</gravity>
 
@@ -116,6 +155,25 @@
           </camera>
         </sensor>
       </link>
+
+      <joint name="left_torpedo_joint" type="ball" >
+        <parent>auv_body_link</parent>
+        <child>left_torpedo_link</child>
+        <!-- <axis>
+          <limit>
+              <lower>0</lower>
+              <upper>0.9</upper>
+          </limit>
+          <xyz>0 0 1</xyz>
+        </axis> -->
+      </joint>
+
+      <joint name="right_torpedo_joint" type="ball">
+        <parent>auv_body_link</parent>
+        <child>right_torpedo_link</child>
+      </joint>
+
+
       <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
     </model>
   </world>

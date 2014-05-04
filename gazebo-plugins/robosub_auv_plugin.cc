@@ -14,8 +14,13 @@
 
 #include <regul.pb.h>
 #include <navig.pb.h>
+#include <shoot.pb.h>
+
+const std::string AUV_LINK = "auv_body_link";
+const std::string TORPEDO_LINK = "torpedo_link";
 
 typedef boost::shared_ptr<const msgs::Regul> RegulPtr;
+typedef boost::shared_ptr<const msgs::Shoot> MsgShootPtr;
 
 namespace gazebo
 {
@@ -34,6 +39,9 @@ namespace gazebo
 
       this->regulSubscriber = node->Subscribe("~/regul", &ModelPush::UpdateRegul, this);
       gzmsg << "Subscribed to topic: " << regulSubscriber->GetTopic() << std::endl;
+
+      this->shootSubscriber = node->Subscribe("~/shoot", &ModelPush::RecieveShootMsg, this);
+      gzmsg << "Subscribed to topic: " << shootSubscriber->GetTopic() << std::endl;
 
       this->navigPublisher = node->Advertise< ::msgs::Navig>("~/navig");
       gzmsg << "Advertised to topic: " << navigPublisher->GetTopic() << std::endl;
@@ -56,24 +64,42 @@ namespace gazebo
       this->timer.Start();
     }
 
-    void OnUpdate(const common::UpdateInfo & _info)
+    void Shoot(::msgs::Shoot::TorpedoType type)
     {
-      this->model->GetLink("link")->SetForce(math::Vector3(0,0,0));
-      this->model->GetLink("link")->SetTorque(math::Vector3(0,0,0));
+      auto link = this->model->GetLink(TorpedoLinkName(type));
+      gzmsg << "Shooting " << ToString(type) << " torpedo" << std::endl;
 
-
-
-      this->model->GetLink("link")->AddRelativeForce(
-        math::Vector3(0, 0, CurBuoyantForce(this->model->GetLink("link")->GetWorldCoGPose())));
-      this->model->GetLink("link")->AddRelativeForce(forceRatio * MAX_FORCE);
-      this->model->GetLink("link")->AddRelativeTorque(torqueRatio * MAX_TORQUE);
-
-      if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME) {
-        SendNavig(this->model->GetLink("link")->GetWorldCoGPose());
-      }
+      this->model->GetJoint(TorpedoJointName(type))->Detach();
+      link->AddRelativeForce(math::Vector3(0, MAX_FORCE * 3, 0));
+      link->AddRelativeForce(
+            math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
     }
 
-    void UpdateRegul(const RegulPtr& msg) {
+    void RecieveShootMsg(const MsgShootPtr& msg)
+    {
+      Shoot(msg->torpedo_type());
+    }
+
+    void OnUpdate(const common::UpdateInfo & _info)
+    {
+      this->model->GetLink(AUV_LINK)->SetForce(math::Vector3(0,0,0));
+      this->model->GetLink(AUV_LINK)->SetTorque(math::Vector3(0,0,0));
+
+      this->model->GetLink(AUV_LINK)->AddRelativeForce(
+        math::Vector3(0, 0, CurBuoyantForce(this->model->GetLink(AUV_LINK)->GetWorldCoGPose())));
+      this->model->GetLink(AUV_LINK)->AddRelativeForce(forceRatio * MAX_FORCE);
+      this->model->GetLink(AUV_LINK)->AddRelativeTorque(torqueRatio * MAX_TORQUE);
+
+      if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME)
+      {
+        SendNavig(this->model->GetLink(AUV_LINK)->GetWorldCoGPose());
+      }
+
+      // Shoot(::msgs::Shoot::RIGHT); // Раскоментировать для демонстрации :D
+    }
+
+    void UpdateRegul(const RegulPtr& msg)
+    {
       gzmsg << "Updating regul" << std::endl;
       this->forceRatio = msgs::Convert(msg->force_ratio());
       this->torqueRatio = msgs::Convert(msg->torque_ratio());
@@ -81,8 +107,10 @@ namespace gazebo
 
   private:
 
-    static double CurBuoyantForce(const math::Pose& pose) {
-      if (pose.pos.z > SURFACE_H) {
+    static double CurBuoyantForce(const math::Pose& pose)
+    {
+      if (pose.pos.z > SURFACE_H)
+      {
         double ratio = (AUV_H - (pose.pos.z - SURFACE_H)) / AUV_H;
         ratio = fmax(ratio, 0);
 
@@ -92,10 +120,26 @@ namespace gazebo
       }
     }
 
+    static std::string ToString(::msgs::Shoot::TorpedoType type)
+    {
+      return type == ::msgs::Shoot::LEFT ? "left" : "right";
+    }
+
+    static std::string TorpedoLinkName(::msgs::Shoot::TorpedoType type)
+    {
+      return ToString(type) + "_" + TORPEDO_LINK;
+    }
+
+    static std::string TorpedoJointName(::msgs::Shoot::TorpedoType type)
+    {
+      return ToString(type) + "_torpedo_joint";
+    }
+
     static constexpr double NAVIG_UPDATE_TIME = 0.1;
 
     transport::NodePtr node;
     transport::SubscriberPtr regulSubscriber;
+    transport::SubscriberPtr shootSubscriber;
     transport::PublisherPtr navigPublisher;
 
     static constexpr double BUOYANT_FORCE = 410;

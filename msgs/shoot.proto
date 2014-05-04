@@ -1,0 +1,10 @@
+package msgs;
+
+message Shoot {
+    enum TorpedoType {
+        LEFT = 0;
+        RIGHT = 1;
+    }
+
+    required TorpedoType torpedo_type = 1;
+}
