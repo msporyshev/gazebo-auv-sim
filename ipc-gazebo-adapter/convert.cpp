@@ -101,7 +101,7 @@ msgs::ipc::JpegCamera convert(const msgs::Camera& msg) {
 
     m.camera_type = msg.camera_type() == msgs::Camera::FRONT ? CAMERA_FRONT : CAMERA_DOWN;
     m.frame_type = ORIGINAL_FRAME;
-    m.size = buff.size();
+    m.frame_size = buff.size();
     m.frame = new uchar[buff.size()];
     memcpy(m.frame, buff.data(), buff.size());
 
