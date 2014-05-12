@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="robosub">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <uri>file://orange_stripe.sdf</uri>
+      <pose>0 0 -4 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>file://auv_body.sdf</uri>
+    </include>
+
+    <include>
+      <name>left_torpedo</name>
+      <uri>file://torpedo.sdf</uri>
+      <pose>-1 0 0 0 0 0</pose>
+    </include>
+
+    <include >
+      <name>right_torpedo</name>
+      <uri>file://torpedo.sdf</uri>
+      <pose>1 0 0 0 0 0</pose>
+    </include>
+
+    <joint name="left_torpedo_joint" type="ball" >
+      <parent>auv_body::link</parent>
+      <child>left_torpedo::link</child>
+    </joint>
+
+    <joint name="right_torpedo_joint" type="ball">
+      <parent>auv_body::link</parent>
+      <child>right_torpedo::link</child>
+    </joint>
+  </world>
+</sdf>

@@ -16,38 +16,43 @@
 #include <navig.pb.h>
 #include <shoot.pb.h>
 
-const std::string AUV_LINK = "auv_body_link";
-const std::string TORPEDO_LINK = "torpedo_link";
+const std::string AUV_MODEL = "auv_body";
+const std::string TORPEDO_MODEL = "torpedo";
+const std::string LINK = "link";
+const std::string JOINT = "joint";
 
 typedef boost::shared_ptr<const msgs::Regul> RegulPtr;
 typedef boost::shared_ptr<const msgs::Shoot> MsgShootPtr;
 
 namespace gazebo
 {
-  class ModelPush : public ModelPlugin
+  class RobosubPlugin : public WorldPlugin
   {
   public:
 
-    void Load(physics::ModelPtr _parent, sdf::ElementPtr)
+    void Load(physics::WorldPtr _parent, sdf::ElementPtr)
     {
+      this->world = _parent;
 
-      this->model = _parent;
+      this->auvBody = _parent->GetModel(AUV_MODEL);
+      this->leftTorpedo = _parend->GetModel(AUV_MODEL);
+      this->rightTorpedo = _parent->GetModel(AUV_MODEL);
 
       this->node = transport::NodePtr(new transport::Node());
 
       this->node->Init("robosub_auv");
 
-      this->regulSubscriber = node->Subscribe("~/regul", &ModelPush::UpdateRegul, this);
+      this->regulSubscriber = node->Subscribe("~/regul", &RobosubPlugin::UpdateRegul, this);
       gzmsg << "Subscribed to topic: " << regulSubscriber->GetTopic() << std::endl;
 
-      this->shootSubscriber = node->Subscribe("~/shoot", &ModelPush::RecieveShootMsg, this);
+      this->shootSubscriber = node->Subscribe("~/shoot", &RobosubPlugin::RecieveShootMsg, this);
       gzmsg << "Subscribed to topic: " << shootSubscriber->GetTopic() << std::endl;
 
       this->navigPublisher = node->Advertise< ::msgs::Navig>("~/navig");
       gzmsg << "Advertised to topic: " << navigPublisher->GetTopic() << std::endl;
 
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(
-          boost::bind(&ModelPush::OnUpdate, this, _1));
+          boost::bind(&RobosubPlugin::OnUpdate, this, _1));
 
       this->timer.Start();
     }
@@ -66,10 +71,11 @@ namespace gazebo
 
     void Shoot(::msgs::Shoot::TorpedoType type)
     {
-      auto link = this->model->GetLink(TorpedoLinkName(type));
+      auto model = this->Torpedo(type);
+      auto link = GetDefaultLink(model);
       gzmsg << "Shooting " << ToString(type) << " torpedo" << std::endl;
 
-      this->model->GetJoint(TorpedoJointName(type))->Detach();
+      GetDefaultJoint(model)->Detach();
       link->AddRelativeForce(math::Vector3(0, MAX_FORCE * 3, 0));
       link->AddRelativeForce(
             math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
@@ -82,17 +88,18 @@ namespace gazebo
 
     void OnUpdate(const common::UpdateInfo & _info)
     {
-      this->model->GetLink(AUV_LINK)->SetForce(math::Vector3(0,0,0));
-      this->model->GetLink(AUV_LINK)->SetTorque(math::Vector3(0,0,0));
+      auto link = GetDefaultLink(this->auvBody);
+      link->SetForce(math::Vector3(0,0,0));
+      link->SetTorque(math::Vector3(0,0,0));
 
-      this->model->GetLink(AUV_LINK)->AddRelativeForce(
-        math::Vector3(0, 0, CurBuoyantForce(this->model->GetLink(AUV_LINK)->GetWorldCoGPose())));
-      this->model->GetLink(AUV_LINK)->AddRelativeForce(forceRatio * MAX_FORCE);
-      this->model->GetLink(AUV_LINK)->AddRelativeTorque(torqueRatio * MAX_TORQUE);
+      link->AddRelativeForce(
+        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
+      link->AddRelativeForce(forceRatio * MAX_FORCE);
+      link->AddRelativeTorque(torqueRatio * MAX_TORQUE);
 
       if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME)
       {
-        SendNavig(this->model->GetLink(AUV_LINK)->GetWorldCoGPose());
+        SendNavig(link->GetWorldCoGPose());
       }
 
       // Shoot(::msgs::Shoot::RIGHT); // Раскоментировать для демонстрации :D
@@ -106,6 +113,9 @@ namespace gazebo
     }
 
   private:
+    physics ModelPtr Torpedo(::msgs::Shoot::TorpedoType type) {
+      return (type == ::msgs::Shoot::LEFT ? this->leftTorpedo : this->rightTorpedo);
+    }
 
     static double CurBuoyantForce(const math::Pose& pose)
     {
@@ -125,14 +135,12 @@ namespace gazebo
       return type == ::msgs::Shoot::LEFT ? "left" : "right";
     }
 
-    static std::string TorpedoLinkName(::msgs::Shoot::TorpedoType type)
-    {
-      return ToString(type) + "_" + TORPEDO_LINK;
+    static GetDefaultJoint(physics::ModelPtr model) {
+      return model->GetJoint(JOINT);
     }
 
-    static std::string TorpedoJointName(::msgs::Shoot::TorpedoType type)
-    {
-      return ToString(type) + "_torpedo_joint";
+    static GetDefaultLink(physics::ModelPtr model) {
+      return model->GetLink(LINK);
     }
 
     static constexpr double NAVIG_UPDATE_TIME = 0.1;
@@ -150,7 +158,9 @@ namespace gazebo
     static constexpr double SURFACE_H = 0;
     static constexpr double AUV_H = 1;
 
-    physics::ModelPtr model;
+    physics::WorldPtr world;
+
+    physics::ModelPtr auvBody, leftTorpedo, rightTorpedo;
 
     common::Timer timer;
 
@@ -158,5 +168,5 @@ namespace gazebo
     event::ConnectionPtr updateConnection;
   };
 
-  GZ_REGISTER_MODEL_PLUGIN(ModelPush)
+  GZ_REGISTER_MODEL_PLUGIN(RobosubPlugin)
 }

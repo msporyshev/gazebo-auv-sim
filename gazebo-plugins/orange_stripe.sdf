@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="orange_stripe">
+      <static>true</static>
+      <link name="orange_stripe_link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://orange_stripe.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+
+    </model>
+</sdf>
