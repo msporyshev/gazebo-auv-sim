@@ -1,9 +1,8 @@
 <?xml version="1.0" ?>
-<sdf version="1.4">
+<sdf version="1.5">
   <model name="auv_body">
     <link name="link">
-      <pose>0 0 0 0 0 0</pose>
-      <gravity>true</gravity>
+      <!-- <gravity>false</gravity> -->
 
       <velocity_decay>
         <linear>0.001</linear>
@@ -96,7 +95,32 @@
       </sensor>
     </link>
 
-    <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
-  </model>
 
+    <include>
+      <name>left_torpedo</name>
+      <uri>model://torpedo</uri>
+      <pose>-0.2 1.5 0 0 0 0</pose>
+    </include>
+<!--
+    <include>
+      <uri>model://gripper</uri>
+      <pose>3 0 0 0 0 0</pose>
+    </include>
+
+ -->     <include >
+      <name>right_torpedo</name>
+      <uri>model://torpedo</uri>
+      <pose>0.2 1.5 0 0 0 0</pose>
+    </include>
+
+    <joint name="left_torpedo_joint" type="ball">
+      <parent>link</parent>
+      <child>left_torpedo::link</child>
+    </joint>
+
+    <joint name="right_torpedo_joint" type="ball">
+      <parent>link</parent>
+      <child>right_torpedo::link</child>
+    </joint>
+  </model>
 </sdf>

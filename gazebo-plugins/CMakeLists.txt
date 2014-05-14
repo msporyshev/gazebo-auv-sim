@@ -35,6 +35,14 @@ if(!PROJECT_INSTALL_DIR)
     set(PROJECT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-file(GLOB_RECURSE CONFIGS "*.sdf *.dae")
+file(GLOB CONFIGS "*.sdf")
+file(GLOB MESH_FILES "*.dae")
 
-install(FILES ${CONFIGS} DESTINATION ${PROJECT_INSTALL_DIR})
+set(GAZEBO_MODEL_PATH $ENV{HOME}/.gazebo/models)
+if (DEFINED ENV{GAZEBO_MODEL_PATH})
+    message("Using ${GAZEBO_MODEL_PATH} to install models")
+    set(GAZEBO_MODEL_PATH $ENV{GAZEBO_MODEL_PATH})
+endif()
+
+install(FILES ${CONFIGS} ${MESH_FILES} DESTINATION ${PROJECT_INSTALL_DIR})
+install(DIRECTORY orange_stripe torpedo auv_body gripper DESTINATION ${GAZEBO_MODEL_PATH})

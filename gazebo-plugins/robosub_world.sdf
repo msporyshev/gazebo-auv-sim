@@ -6,34 +6,17 @@
     </include>
 
     <include>
-      <uri>file://orange_stripe.sdf</uri>
+      <uri>model://orange_stripe</uri>
       <pose>0 0 -4 0 0 0</pose>
     </include>
 
     <include>
-      <uri>file://auv_body.sdf</uri>
+      <name>auv_body</name>
+      <uri>model://auv_body</uri>
+      <pose>0 0 0 0 0 0</pose>
     </include>
 
-    <include>
-      <name>left_torpedo</name>
-      <uri>file://torpedo.sdf</uri>
-      <pose>-1 0 0 0 0 0</pose>
-    </include>
+    <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
 
-    <include >
-      <name>right_torpedo</name>
-      <uri>file://torpedo.sdf</uri>
-      <pose>1 0 0 0 0 0</pose>
-    </include>
-
-    <joint name="left_torpedo_joint" type="ball" >
-      <parent>auv_body::link</parent>
-      <child>left_torpedo::link</child>
-    </joint>
-
-    <joint name="right_torpedo_joint" type="ball">
-      <parent>auv_body::link</parent>
-      <child>right_torpedo::link</child>
-    </joint>
   </world>
 </sdf>

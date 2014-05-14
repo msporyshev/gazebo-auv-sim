@@ -35,7 +35,7 @@ namespace gazebo
       this->world = _parent;
 
       this->auvBody = _parent->GetModel(AUV_MODEL);
-      this->leftTorpedo = _parend->GetModel(AUV_MODEL);
+      this->leftTorpedo = _parent->GetModel(AUV_MODEL);
       this->rightTorpedo = _parent->GetModel(AUV_MODEL);
 
       this->node = transport::NodePtr(new transport::Node());
@@ -89,11 +89,10 @@ namespace gazebo
     void OnUpdate(const common::UpdateInfo & _info)
     {
       auto link = GetDefaultLink(this->auvBody);
-      link->SetForce(math::Vector3(0,0,0));
+      link->SetForce(
+        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
       link->SetTorque(math::Vector3(0,0,0));
 
-      link->AddRelativeForce(
-        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
       link->AddRelativeForce(forceRatio * MAX_FORCE);
       link->AddRelativeTorque(torqueRatio * MAX_TORQUE);
 
@@ -113,7 +112,7 @@ namespace gazebo
     }
 
   private:
-    physics ModelPtr Torpedo(::msgs::Shoot::TorpedoType type) {
+    physics::ModelPtr Torpedo(::msgs::Shoot::TorpedoType type) {
       return (type == ::msgs::Shoot::LEFT ? this->leftTorpedo : this->rightTorpedo);
     }
 
@@ -135,11 +134,11 @@ namespace gazebo
       return type == ::msgs::Shoot::LEFT ? "left" : "right";
     }
 
-    static GetDefaultJoint(physics::ModelPtr model) {
+    static physics::JointPtr GetDefaultJoint(physics::ModelPtr model) {
       return model->GetJoint(JOINT);
     }
 
-    static GetDefaultLink(physics::ModelPtr model) {
+    static physics::LinkPtr GetDefaultLink(physics::ModelPtr model) {
       return model->GetLink(LINK);
     }
 
@@ -168,5 +167,5 @@ namespace gazebo
     event::ConnectionPtr updateConnection;
   };
 
-  GZ_REGISTER_MODEL_PLUGIN(RobosubPlugin)
+  GZ_REGISTER_WORLD_PLUGIN(RobosubPlugin)
 }

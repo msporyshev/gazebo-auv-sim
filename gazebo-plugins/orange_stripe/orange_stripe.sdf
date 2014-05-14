@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
-<sdf version="1.4">
+<sdf version="1.5">
     <model name="orange_stripe">
       <static>true</static>
-      <link name="orange_stripe_link">
+      <link name="link">
         <visual name="visual">
           <geometry>
             <mesh>
@@ -10,6 +10,13 @@
             </mesh>
           </geometry>
         </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://orange_stripe.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
       </link>
 
     </model>
