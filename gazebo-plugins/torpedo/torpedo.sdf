@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="torpedo">
+    <link name="link">
+      <gravity>false</gravity>
+      <inertial>
+        <mass>0.01</mass>
+      </inertial>
+      <pose>0 0 0 -1.54 0 0</pose>
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>file://torpedo.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>file://torpedo.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

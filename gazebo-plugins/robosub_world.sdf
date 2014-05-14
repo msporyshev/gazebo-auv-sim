@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="robosub">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <uri>model://orange_stripe</uri>
+      <pose>0 0 -4 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>auv_body</name>
+      <uri>model://auv_body</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
+
+  </world>
+</sdf>
