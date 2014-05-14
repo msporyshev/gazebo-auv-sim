@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <string>
 #include <cmath>
 
 #include <gazebo/msgs/msgs.hh>
@@ -15,6 +16,7 @@
 #include <regul.pb.h>
 #include <navig.pb.h>
 #include <shoot.pb.h>
+#include <gripper.pb.h>
 
 const std::string AUV_MODEL = "auv_body";
 const std::string TORPEDO_MODEL = "torpedo";
@@ -23,6 +25,7 @@ const std::string JOINT = "joint";
 
 typedef boost::shared_ptr<const msgs::Regul> RegulPtr;
 typedef boost::shared_ptr<const msgs::Shoot> MsgShootPtr;
+typedef boost::shared_ptr<const msgs::Gripper> MsgGripperPtr;
 
 namespace gazebo
 {
@@ -44,6 +47,9 @@ namespace gazebo
 
       this->regulSubscriber = node->Subscribe("~/regul", &RobosubPlugin::UpdateRegul, this);
       gzmsg << "Subscribed to topic: " << regulSubscriber->GetTopic() << std::endl;
+
+      this->gripperSubscriber = node->Subscribe("~/gripper", &RobosubPlugin::RecieveGripMessage, this);
+      gzmsg << "Subscribed to topic: " << gripperSubscriber->GetTopic() << std::endl;
 
       this->shootSubscriber = node->Subscribe("~/shoot", &RobosubPlugin::RecieveShootMsg, this);
       gzmsg << "Subscribed to topic: " << shootSubscriber->GetTopic() << std::endl;
@@ -67,6 +73,43 @@ namespace gazebo
       navigPublisher->Publish(msg);
       this->timer.Stop();
       this->timer.Start();
+    }
+
+    void StartGripping() {
+      auto l_finger = this->auvBody->GetLink("gripper::left_finger");
+      auto r_finger = this->auvBody->GetLink("gripper::right_finger");
+      l_finger->AddRelativeForce(math::Vector3(1, 0, 0));
+      r_finger->AddRelativeForce(math::Vector3(-1, 0, 0));
+    }
+
+    void StopGripping() {
+      for (std::string fingername : {"left", "right"}) {
+        auto finger = this->auvBody->GetLink(fingername + "_finger");
+        finger->Reset();
+      }
+    }
+
+    void ResetGripper() {
+      auto l_finger = this->auvBody->GetLink("gripper::left_finger");
+      auto r_finger = this->auvBody->GetLink("gripper::right_finger");
+      l_finger->SetLinearVel(math::Vector3(-1, 0, 0));
+      // l_finger->SetForce(math::Vector3(0, 0, 0));
+      r_finger->SetLinearVel(math::Vector3(1, 0, 0));
+      // r_finger->SetForce(math::Vector3(0, 0, 0));
+    }
+
+    void RecieveGripMessage(const MsgGripperPtr& msg) {
+      switch(msg->action()) {
+      case ::msgs::Gripper::START:
+        this->StartGripping();
+        break;
+      case ::msgs::Gripper::STOP:
+        this->StopGripping();
+        break;
+      case ::msgs::Gripper::RESET:
+        this->ResetGripper();
+        break;
+      }
     }
 
     void Shoot(::msgs::Shoot::TorpedoType type)
@@ -101,6 +144,8 @@ namespace gazebo
         SendNavig(link->GetWorldCoGPose());
       }
 
+      // this->StartGripping();
+      this->ResetGripper();
       // Shoot(::msgs::Shoot::RIGHT); // Раскоментировать для демонстрации :D
     }
 
@@ -147,6 +192,7 @@ namespace gazebo
     transport::NodePtr node;
     transport::SubscriberPtr regulSubscriber;
     transport::SubscriberPtr shootSubscriber;
+    transport::SubscriberPtr gripperSubscriber;
     transport::PublisherPtr navigPublisher;
 
     static constexpr double BUOYANT_FORCE = 410;

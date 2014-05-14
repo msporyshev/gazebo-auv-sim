@@ -1,0 +1,11 @@
+package msgs;
+
+message Gripper {
+    enum Action {
+        START = 0;
+        STOP = 1;
+        RESET = 2;
+    }
+
+    required Action action = 1;
+}
