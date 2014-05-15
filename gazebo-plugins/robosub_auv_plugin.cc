@@ -38,8 +38,8 @@ namespace gazebo
       this->world = _parent;
 
       this->auvBody = _parent->GetModel(AUV_MODEL);
-      this->leftTorpedo = _parent->GetModel(AUV_MODEL);
-      this->rightTorpedo = _parent->GetModel(AUV_MODEL);
+      this->leftTorpedo = this->auvBody->GetLink("left_torpedo::link");
+      this->rightTorpedo = this->auvBody->GetLink("right_torpedo::link");
 
       this->node = transport::NodePtr(new transport::Node());
 
@@ -76,10 +76,12 @@ namespace gazebo
     }
 
     void StartGripping() {
-      auto l_finger = this->auvBody->GetLink("gripper::left_finger");
-      auto r_finger = this->auvBody->GetLink("gripper::right_finger");
-      l_finger->AddRelativeForce(math::Vector3(1, 0, 0));
-      r_finger->AddRelativeForce(math::Vector3(-1, 0, 0));
+      auto l_finger = this->auvBody->GetJoint("simple_gripper::palm_left_finger");
+      auto r_finger = this->auvBody->GetJoint("simple_gripper::palm_right_finger");
+      l_finger->SetForce(0, -1000.5);
+      r_finger->SetForce(0, 1000.5);
+      // l_finger->SetForce(0, math::Vector3(0, 0.1, 0));
+      // r_finger->SetForce(0, math::Vector3(0, -0.1, 0));
     }
 
     void StopGripping() {
@@ -90,12 +92,10 @@ namespace gazebo
     }
 
     void ResetGripper() {
-      auto l_finger = this->auvBody->GetLink("gripper::left_finger");
-      auto r_finger = this->auvBody->GetLink("gripper::right_finger");
-      l_finger->SetLinearVel(math::Vector3(-1, 0, 0));
-      // l_finger->SetForce(math::Vector3(0, 0, 0));
-      r_finger->SetLinearVel(math::Vector3(1, 0, 0));
-      // r_finger->SetForce(math::Vector3(0, 0, 0));
+      auto l_finger = this->auvBody->GetJoint("simple_gripper::palm_left_finger");
+      auto r_finger = this->auvBody->GetJoint("simple_gripper::palm_right_finger");
+      l_finger->SetForce(0, 1000.5);
+      r_finger->SetForce(0, -1000.5);
     }
 
     void RecieveGripMessage(const MsgGripperPtr& msg) {
@@ -114,12 +114,11 @@ namespace gazebo
 
     void Shoot(::msgs::Shoot::TorpedoType type)
     {
-      auto model = this->Torpedo(type);
-      auto link = GetDefaultLink(model);
+      auto link = this->Torpedo(type);
       gzmsg << "Shooting " << ToString(type) << " torpedo" << std::endl;
 
-      GetDefaultJoint(model)->Detach();
-      link->AddRelativeForce(math::Vector3(0, MAX_FORCE * 3, 0));
+      this->TorpedoJoint(type)->Detach();
+      link->AddRelativeForce(math::Vector3(0, MAX_FORCE / 10, 0));
       link->AddRelativeForce(
             math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
     }
@@ -144,8 +143,6 @@ namespace gazebo
         SendNavig(link->GetWorldCoGPose());
       }
 
-      // this->StartGripping();
-      this->ResetGripper();
       // Shoot(::msgs::Shoot::RIGHT); // Раскоментировать для демонстрации :D
     }
 
@@ -157,8 +154,12 @@ namespace gazebo
     }
 
   private:
-    physics::ModelPtr Torpedo(::msgs::Shoot::TorpedoType type) {
+    physics::LinkPtr Torpedo(::msgs::Shoot::TorpedoType type) {
       return (type == ::msgs::Shoot::LEFT ? this->leftTorpedo : this->rightTorpedo);
+    }
+
+    physics::JointPtr TorpedoJoint(::msgs::Shoot::TorpedoType type) {
+      return (type == ::msgs::Shoot::LEFT ? this->auvBody->GetJoint("left_torpedo_joint") : this->auvBody->GetJoint("right_torpedo_joint"));
     }
 
     static double CurBuoyantForce(const math::Pose& pose)
@@ -205,7 +206,10 @@ namespace gazebo
 
     physics::WorldPtr world;
 
-    physics::ModelPtr auvBody, leftTorpedo, rightTorpedo;
+    physics::ModelPtr auvBody;
+    physics::LinkPtr leftTorpedo, rightTorpedo;
+
+    bool flag = false;
 
     common::Timer timer;
 

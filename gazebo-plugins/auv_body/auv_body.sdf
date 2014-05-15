@@ -103,8 +103,8 @@
     </include>
 
     <include>
-      <uri>model://gripper</uri>
-      <pose>0 2 -0.2 0 0 1.54</pose>
+      <uri>model://simple_gripper</uri>
+      <pose>0 2 -0 0 0 1.54</pose>
     </include>
 
     <include >
@@ -113,10 +113,10 @@
       <pose>0.2 1.5 0 0 0 0</pose>
     </include>
 
-    <joint name="gripper_joint" type="ball">
-      <parent>link</parent>
-      <child>gripper::palm</child>
-    </joint>
+    <!-- <joint name="gripper_joint" type="ball"> -->
+      <!-- <parent>link</parent> -->
+      <!-- <child>simple_gripper::palm</child> -->
+    <!-- </joint> -->
 
     <joint name="left_torpedo_joint" type="ball">
       <parent>link</parent>
