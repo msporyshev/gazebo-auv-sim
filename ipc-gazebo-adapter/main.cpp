@@ -131,8 +131,8 @@ void init(int argc, char** argv) {
 
 void main_loop() {
     while (true) {
-        IPC_listenClear(10);
-        gazebo::common::Time::MSleep(10);
+        IPC_listenClear(100);
+        gazebo::common::Time::MSleep(100);
     }
 }
 
