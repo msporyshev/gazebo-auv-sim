@@ -90,7 +90,7 @@ public:
 
 
         INFO() << "Waiting for connection";
-        gazebo::common::Time::MSleep(100);
+        // gazebo::common::Time::MSleep(100);
         INFO() << SUCCESS;
     }
 
@@ -113,7 +113,7 @@ public:
         INFO() << "Advertised to gazebo topic" << publisher_->GetTopic();
 
         INFO() << "Waiting for connection";
-        gazebo::common::Time::MSleep(100);
+        // gazebo::common::Time::MSleep(100);
         INFO() << SUCCESS;
     }
 
