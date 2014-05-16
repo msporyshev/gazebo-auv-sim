@@ -57,7 +57,7 @@ public:
   }
 
   void RecieveSwitchCamera(const boost::shared_ptr<const ::msgs::Camera>& msg) {
-    this->workingCameraType = msg->camera_type();
+    this->workingCameraType = static_cast<::msgs::Camera::CameraType>(msg->camera_type());
   }
 
 private:

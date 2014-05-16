@@ -57,7 +57,7 @@ public:
 
         INFO() << "Subscribing to ipc message: " << consts_.IPC_NAME;
         if (IPC_subscribeData(consts_.IPC_NAME, recieve_msg, this) != IPC_OK) {
-            THROW(Exception(errno, "Unable to define message of type: " + std::string(consts_.IPC_NAME)));
+            THROW(Exception(errno, "Unable to subscribe message of type: " + std::string(consts_.IPC_NAME)));
         }
     }
 
@@ -87,6 +87,11 @@ public:
     {
         subscriber_ = node->Subscribe(consts_.TOPIC, &GazeboReciever::recieve_msg, this);
         INFO() << "Subscribed to gazebo topic: " << subscriber_->GetTopic();
+
+
+        INFO() << "Waiting for connection";
+        gazebo::common::Time::MSleep(100);
+        INFO() << SUCCESS;
     }
 
     void recieve_msg(const MsgPtr<MsgType>& msg) {
@@ -108,7 +113,7 @@ public:
         INFO() << "Advertised to gazebo topic" << publisher_->GetTopic();
 
         INFO() << "Waiting for connection";
-        publisher_->WaitForConnection();
+        gazebo::common::Time::MSleep(100);
         INFO() << SUCCESS;
     }
 

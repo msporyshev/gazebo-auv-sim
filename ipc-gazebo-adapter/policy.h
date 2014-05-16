@@ -20,12 +20,16 @@
 #include "ipc_message.h"
 
 #define REGISTER_POLICY(Name, PolicyType, RecieveMsg, ForwardMsg, Consts) \
-PolicyRegistrator<PolicyType<RecieveMsg, ForwardMsg, Consts> > Name##____(#Name);
+volatile PolicyRegistrator<PolicyType<RecieveMsg, ForwardMsg, Consts> > Name##____(#Name);
 
-extern std::map<std::string, std::unique_ptr<AbstractPipe> > pipe_by_name;
+
+class AbstractRegistrator {
+public:
+    static std::map<std::string, std::unique_ptr<AbstractPipe> > pipe_by_name;
+};
 
 template<typename Policy>
-class PolicyRegistrator {
+class PolicyRegistrator: public AbstractRegistrator {
 public:
     PolicyRegistrator(std::string name) {
         pipe_by_name[name] = std::unique_ptr<AbstractPipe>(new TransportPipe<Policy>());
@@ -48,4 +52,40 @@ struct GazeboToIPCPolicy {
 
     typedef msgs::ipc::Message<ForwardMsgType> ForwardMsg;
     typedef IPCForwarder<ForwardMsg, Consts> ForwarderClass;
+};
+
+struct RegulConsts {
+    const char* IPC_NAME = MSG_REGUL_NAME;
+    const char* IPC_FORMAT = MSG_REGUL_FORMAT;
+    const std::string TOPIC = "~/regul";
+};
+
+struct JpegCameraConsts {
+    const char* IPC_NAME = MSG_JPEG_VIDEO_FRAME_NAME;
+    const char* IPC_FORMAT = MSG_JPEG_VIDEO_FRAME_FORMAT;
+    const std::string TOPIC = "~/camera";
+};
+
+struct RawCameraConsts {
+    const char* IPC_NAME = MSG_VIDEO_FRAME_NAME;
+    const char* IPC_FORMAT = MSG_VIDEO_FRAME_FORMAT;
+    const std::string TOPIC = "~/camera";
+};
+
+struct NavigConsts {
+    const char* IPC_NAME = MSG_NAVIG_NAME;
+    const char* IPC_FORMAT = MSG_NAVIG_FORMAT;
+    const std::string TOPIC = "~/navig";
+};
+
+struct SwitchCameraConsts {
+    const char* IPC_NAME = MSG_SWITCH_CAMERA_NAME;
+    const char* IPC_FORMAT = MSG_SWITCH_CAMERA_FORMAT;
+    const std::string TOPIC = "~/switch_camera";
+};
+
+struct CompassConsts {
+    const char* IPC_NAME = MSG_COMPASS_NAME;
+    const char* IPC_FORMAT = MSG_COMPASS_FORMAT;
+    const std::string TOPIC = "~/imu";
 };

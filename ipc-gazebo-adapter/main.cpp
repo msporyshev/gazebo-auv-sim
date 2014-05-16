@@ -32,7 +32,7 @@ typedef std::string LogLevel;
 namespace po = boost::program_options;
 namespace gztransport = gazebo::transport;
 
-std::mutex global_mutex;
+extern std::mutex global_mutex;
 
 namespace {
 
@@ -123,7 +123,7 @@ void init(int argc, char** argv) {
     ipc_init();
 
     // TODO загружать названия из конфига
-    for (auto& pair : pipe_by_name) {
+    for (auto& pair : AbstractRegistrator::pipe_by_name) {
         INFO() << "Starting pipe: " << pair.first;
         pair.second->run(node);
     }
