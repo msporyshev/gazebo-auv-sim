@@ -5,10 +5,27 @@
       <uri>model://sun</uri>
     </include>
 
-    <include>
-      <uri>model://orange_stripe</uri>
+    <model name="orange_stripe">
       <pose>0 0 -4 0 0 0</pose>
-    </include>
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://orange_stripe.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://orange_stripe.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+
+    </model>
 
     <include>
       <name>auv_body</name>

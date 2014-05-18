@@ -2,7 +2,8 @@
 <sdf version="1.4">
   <model name="auv_body">
     <link name="link">
-      <!-- <gravity>false</gravity> -->
+
+      <gravity>false</gravity>
 
       <velocity_decay>
         <linear>0.001</linear>
@@ -95,7 +96,7 @@
       </sensor>
     </link>
 
-
+<!--
     <include>
       <name>left_torpedo</name>
       <uri>model://torpedo</uri>
@@ -113,10 +114,10 @@
       <pose>0.2 1.5 0 0 0 0</pose>
     </include>
 
-    <!-- <joint name="gripper_joint" type="ball"> -->
-      <!-- <parent>link</parent> -->
-      <!-- <child>simple_gripper::palm</child> -->
-    <!-- </joint> -->
+    <joint name="gripper_joint" type="ball">
+      <parent>link</parent>
+      <child>simple_gripper::palm</child>
+    </joint>
 
     <joint name="left_torpedo_joint" type="ball">
       <parent>link</parent>
@@ -126,6 +127,6 @@
     <joint name="right_torpedo_joint" type="ball">
       <parent>link</parent>
       <child>right_torpedo::link</child>
-    </joint>
+    </joint> -->
   </model>
 </sdf>

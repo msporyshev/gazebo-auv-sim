@@ -10,6 +10,8 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/gazebo.hh>
 
+#include <common.h>
+
 #include <regul.pb.h>
 #include <navig.pb.h>
 
@@ -84,6 +86,9 @@ void gazebo_init() {
     node->Init("robosub_auv");
 
     publisher = node->Advertise<msgs::Regul>("~/regul");
+    INFO() << "WaitForConnection";
+    publisher->WaitForConnection();
+    INFO() << "Success";
     subscriber = node->Subscribe("~/navig", &RecieveNavig);
 }
 
@@ -94,6 +99,8 @@ int main(int argc, char** argv) {
 
     for (auto msg : regul_messages) {
         gazebo::common::Time::MSleep(300);
+        DEBUG() << "Sending regul";
+        DEBUG() << msg.DebugString();
         publisher->Publish(msg);
     }
     gazebo::shutdown();

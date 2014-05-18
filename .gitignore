@@ -2,3 +2,4 @@
 *.sublime-workspace
 build
 test
+*.DS_Store

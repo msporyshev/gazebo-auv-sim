@@ -132,7 +132,7 @@ namespace gazebo
     {
       auto link = GetDefaultLink(this->auvBody);
       link->SetForce(
-        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
+        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose()))); //
       link->SetTorque(math::Vector3(0,0,0));
 
       link->AddRelativeForce(forceRatio * MAX_FORCE);
@@ -199,7 +199,7 @@ namespace gazebo
     static constexpr double BUOYANT_FORCE = 410;
 
     math::Vector3 forceRatio, torqueRatio;
-    static constexpr double MAX_FORCE = 3, MAX_TORQUE = 3;
+    static constexpr double MAX_FORCE = 10, MAX_TORQUE = 0.1;
 
     static constexpr double SURFACE_H = 0;
     static constexpr double AUV_H = 1;
