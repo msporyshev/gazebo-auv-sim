@@ -1,0 +1,8 @@
+package msgs;
+import "vector3d.proto";
+
+message DVL {
+    required gazebo.msgs.Vector3d linear_vel = 1;
+    required double height = 2;
+    required double time = 3;
+}

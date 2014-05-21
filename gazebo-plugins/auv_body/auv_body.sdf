@@ -2,8 +2,9 @@
 <sdf version="1.4">
   <model name="auv_body">
     <link name="link">
+      <pose>0 0 0 0 0 1.57</pose>
 
-      <gravity>false</gravity>
+      <!-- <gravity>false</gravity> -->
 
       <velocity_decay>
         <linear>0.001</linear>
@@ -11,28 +12,28 @@
       </velocity_decay>
 
       <inertial>
-        <mass>40</mass>
+        <mass>38</mass>
       </inertial>
 
       <collision name="collision">
         <geometry>
-          <box>
-            <size>1 3 1</size>
-          </box>
-          <!-- <mesh>
-            <uri>file://imtp_auv.dae</uri>
-          </mesh> -->
+<!--           <box>
+            <size>0.5 1.1 0.5</size>
+          </box> -->
+          <mesh>
+            <uri>file://iacp_auv.dae</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="visual">
         <geometry>
-          <!-- <mesh>
-            <uri>file://imtp_auv.dae</uri>
-          </mesh> -->
+          <mesh>
+            <uri>file://iacp_auv.dae</uri>
+          </mesh>
 
-          <box>
-            <size>1 3 1</size>
-          </box>
+<!--           <box>
+            <size>0.5 1.1 0.5</size>
+          </box> -->
         </geometry>
       </visual>
 
@@ -96,28 +97,19 @@
       </sensor>
     </link>
 
-<!--
     <include>
       <name>left_torpedo</name>
       <uri>model://torpedo</uri>
-      <pose>-0.2 1.5 0 0 0 0</pose>
+      <pose>-0.2 0.5 0.1 0 0 0</pose>
     </include>
 
-    <include>
-      <uri>model://simple_gripper</uri>
-      <pose>0 2 -0 0 0 1.54</pose>
-    </include>
 
     <include >
       <name>right_torpedo</name>
       <uri>model://torpedo</uri>
-      <pose>0.2 1.5 0 0 0 0</pose>
+      <pose>0.2 0.5 0.1 0 0 0</pose>
     </include>
 
-    <joint name="gripper_joint" type="ball">
-      <parent>link</parent>
-      <child>simple_gripper::palm</child>
-    </joint>
 
     <joint name="left_torpedo_joint" type="ball">
       <parent>link</parent>
@@ -127,6 +119,15 @@
     <joint name="right_torpedo_joint" type="ball">
       <parent>link</parent>
       <child>right_torpedo::link</child>
-    </joint> -->
+    </joint>
+
+    <include>
+      <uri>model://gripper</uri>
+      <pose>0 0.8 -0 0 0 1.54</pose>
+    </include>
+    <joint name="gripper_joint" type="ball">
+      <parent>link</parent>
+      <child>gripper::palm</child>
+    </joint>
   </model>
 </sdf>

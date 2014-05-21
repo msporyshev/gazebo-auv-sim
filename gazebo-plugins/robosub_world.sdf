@@ -4,7 +4,7 @@
     <include>
       <uri>model://sun</uri>
     </include>
-
+<!--
     <model name="orange_stripe">
       <pose>0 0 -4 0 0 0</pose>
       <static>true</static>
@@ -27,11 +27,12 @@
 
     </model>
 
-    <include>
+ -->    <include>
       <name>auv_body</name>
       <uri>model://auv_body</uri>
       <pose>0 0 0.5 0 0 0</pose>
     </include>
+
 
     <plugin name="robosub_auv" filename="gazebo-plugins/librobosub_auv_plugin.so" />
 

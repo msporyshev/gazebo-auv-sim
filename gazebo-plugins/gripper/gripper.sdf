@@ -9,7 +9,7 @@
             <visual name='palm_vis'>
                 <geometry>
                     <box>
-                        <size>0.2 1 0.2</size>
+                        <size>0.1 0.5 0.1</size>
                     </box>
                 </geometry>
             </visual>
@@ -17,7 +17,7 @@
             <collision name='palm_col'>
                 <geometry>
                     <box>
-                        <size>0.2 1 0.2</size>
+                        <size>0.1 0.5 0.1</size>
                     </box>
                 </geometry>
             </collision>
@@ -29,12 +29,12 @@
                 <mass>1</mass>
             </inertial>
 
-            <pose>0.5 -0.5 0 0 0 0</pose>
+            <pose>0.3 -0.2 0 0 0 0</pose>
 
             <visual name='left_finger_vis'>
                 <geometry>
                     <box>
-                        <size>0.5 0.2 0.2</size>
+                        <size>0.3 0.1 0.1</size>
                     </box>
                 </geometry>
             </visual>
@@ -42,7 +42,7 @@
             <collision name='left_finger_col'>
                 <geometry>
                     <box>
-                        <size>0.5 0.2 0.2</size>
+                        <size>0.3 0.1 0.1</size>
                     </box>
                 </geometry>
             </collision>
@@ -54,12 +54,12 @@
                 <mass>1</mass>
             </inertial>
 
-            <pose>0.5 0.5 0 0 0 0</pose>
+            <pose>0.3 0.2 0 0 0 0</pose>
 
             <visual name='right_finger_vis'>
                 <geometry>
                     <box>
-                        <size>0.5 0.2 0.2</size>
+                        <size>0.3 0.1 0.1</size>
                     </box>
                 </geometry>
             </visual>
@@ -67,7 +67,7 @@
             <collision name='right_finger_col'>
                 <geometry>
                     <box>
-                        <size>0.5 0.2 0.2</size>
+                        <size>0.3 0.1 0.1</size>
                     </box>
                 </geometry>
             </collision>

@@ -73,6 +73,7 @@ namespace gazebo
       navigPublisher->Publish(msg);
       this->timer.Stop();
       this->timer.Start();
+      std::cout << msg.DebugString() << std::endl;
     }
 
     void StartGripping() {
@@ -118,9 +119,9 @@ namespace gazebo
       gzmsg << "Shooting " << ToString(type) << " torpedo" << std::endl;
 
       this->TorpedoJoint(type)->Detach();
-      link->AddRelativeForce(math::Vector3(0, MAX_FORCE / 10, 0));
-      link->AddRelativeForce(
+      link->SetForce(
             math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())));
+      link->AddRelativeForce(math::Vector3(0, MAX_FORCE / 10, 0));
     }
 
     void RecieveShootMsg(const MsgShootPtr& msg)
@@ -130,20 +131,30 @@ namespace gazebo
 
     void OnUpdate(const common::UpdateInfo & _info)
     {
-      auto link = GetDefaultLink(this->auvBody);
-      link->SetForce(
-        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose()))); //
-      link->SetTorque(math::Vector3(0,0,0));
-
-      link->AddRelativeForce(forceRatio * MAX_FORCE);
-      link->AddRelativeTorque(torqueRatio * MAX_TORQUE);
-
+      InitForces();
       if (this->timer.GetElapsed().Double() >= NAVIG_UPDATE_TIME)
       {
+        auto link = GetDefaultLink(this->auvBody);
         SendNavig(link->GetWorldCoGPose());
       }
 
       // Shoot(::msgs::Shoot::RIGHT); // Раскоментировать для демонстрации :D
+    }
+
+    void InitForces() {
+      auto link = GetDefaultLink(this->auvBody);
+      auto pose = link->GetWorldCoGPose();
+      auto rot = pose.rot;
+      auto vc = pose.pos + rot.GetZAxis().Normalize() * 0.1;
+
+      link->SetTorque(math::Vector3(0, 0, 0));
+
+      link->AddForceAtWorldPosition(
+        math::Vector3(0, 0, CurBuoyantForce(link->GetWorldCoGPose())),
+        vc); //
+
+      link->AddRelativeForce(forceRatio * MAX_FORCE);
+      link->AddRelativeTorque(torqueRatio * MAX_TORQUE);
     }
 
     void UpdateRegul(const RegulPtr& msg)
@@ -151,6 +162,8 @@ namespace gazebo
       gzmsg << "Updating regul" << std::endl;
       this->forceRatio = msgs::Convert(msg->force_ratio());
       this->torqueRatio = msgs::Convert(msg->torque_ratio());
+
+      this->InitForces();
     }
 
   private:
@@ -196,13 +209,13 @@ namespace gazebo
     transport::SubscriberPtr gripperSubscriber;
     transport::PublisherPtr navigPublisher;
 
-    static constexpr double BUOYANT_FORCE = 410;
+    static constexpr double BUOYANT_FORCE = 374;
 
     math::Vector3 forceRatio, torqueRatio;
-    static constexpr double MAX_FORCE = 10, MAX_TORQUE = 0.1;
+    static constexpr double MAX_FORCE = 17, MAX_TORQUE = 1.7;
 
     static constexpr double SURFACE_H = 0;
-    static constexpr double AUV_H = 1;
+    static constexpr double AUV_H = 0.5;
 
     physics::WorldPtr world;
 
