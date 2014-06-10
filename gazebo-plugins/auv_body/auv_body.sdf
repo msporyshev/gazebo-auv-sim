@@ -2,7 +2,7 @@
 <sdf version="1.4">
   <model name="auv_body">
     <link name="link">
-      <pose>0 0 0 0 0 1.57</pose>
+      <pose>0 0 0 0 0 0</pose>
 
       <!-- <gravity>false</gravity> -->
 
@@ -17,23 +17,23 @@
 
       <collision name="collision">
         <geometry>
-<!--           <box>
+          <box>
             <size>0.5 1.1 0.5</size>
-          </box> -->
-          <mesh>
+          </box>
+          <!-- <mesh>
             <uri>file://iacp_auv.dae</uri>
-          </mesh>
+          </mesh> -->
         </geometry>
       </collision>
       <visual name="visual">
         <geometry>
-          <mesh>
+          <!-- <mesh>
             <uri>file://iacp_auv.dae</uri>
-          </mesh>
+          </mesh> -->
 
-<!--           <box>
+          <box>
             <size>0.5 1.1 0.5</size>
-          </box> -->
+          </box>
         </geometry>
       </visual>
 
@@ -96,7 +96,7 @@
         </camera>
       </sensor>
     </link>
-
+<!--
     <include>
       <name>left_torpedo</name>
       <uri>model://torpedo</uri>
@@ -129,5 +129,5 @@
       <parent>link</parent>
       <child>gripper::palm</child>
     </joint>
-  </model>
+  </model> -->
 </sdf>
