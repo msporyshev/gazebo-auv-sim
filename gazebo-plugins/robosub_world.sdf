@@ -6,17 +6,13 @@
     </include>
 
     <include>
-      <uri>model://orange_stripe</uri>
-      <pose>0 0 -4 0 0 0</pose>
-    </include>
-
-    <include>
       <name>auv_body</name>
       <uri>model://auv_body</uri>
       <pose>0 0 0.5 0 0 0</pose>
     </include>
 
     <model name="singapore">
+      <static>true</static>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -25,6 +21,7 @@
             </mesh>
           </geometry>
         </visual>
+        <pose>0 0 13 0 0 0</pose>
       </link>
     </model>
 
