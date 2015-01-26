@@ -209,10 +209,10 @@ namespace gazebo
     transport::SubscriberPtr gripperSubscriber;
     transport::PublisherPtr navigPublisher;
 
-    static constexpr double BUOYANT_FORCE = 374;
+    static constexpr double BUOYANT_FORCE = 400;
 
     math::Vector3 forceRatio, torqueRatio;
-    static constexpr double MAX_FORCE = 17, MAX_TORQUE = 1.7;
+    static constexpr double MAX_FORCE = 170, MAX_TORQUE = 17;
 
     static constexpr double SURFACE_H = 0;
     static constexpr double AUV_H = 0.5;
