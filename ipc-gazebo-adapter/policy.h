@@ -6,10 +6,16 @@
 
 #include <gazebo/msgs/msgs.hh>
 
-#include <msg_regul.h>
-#include <msg_robosub.h>
-#include <msg_navig.h>
-#include <msg_compass.h>
+// #include <msg_regul.h>
+// #include <msg_robosub.h>
+#include <msg/devices/MsgNavig.h>
+#include <msg/devices/MsgRegul.h>
+#include <msg/devices/MsgVideoFrame.h>
+#include <msg/devices/MsgJpegVideoFrame.h>
+#include <msg/devices/MsgSwitchCamera.h>
+#include <msg/devices/MsgCompass.h>
+// #include <msg_navig.h>
+// #include <msg_compass.h>
 
 #include <regul.pb.h>
 #include <navig.pb.h>
