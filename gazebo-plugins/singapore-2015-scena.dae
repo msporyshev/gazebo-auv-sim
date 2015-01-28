@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.69.0 r60991</authoring_tool>
     </contributor>
-    <created>2015-01-29T03:38:28</created>
-    <modified>2015-01-29T03:38:28</modified>
+    <created>2015-01-29T03:50:44</created>
+    <modified>2015-01-29T03:50:44</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -963,7 +963,7 @@
         </instance_geometry>
       </node>
       <node id="Cone" name="Cone" type="NODE">
-        <matrix sid="transform">1 0 0 -5.5 0 1 0 8.5 0 0 1 -14 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 -5.8 0 1 0 8.7 0 0 1 -14.8 0 0 0 1</matrix>
         <instance_geometry url="#Cone-mesh">
           <bind_material>
             <technique_common>

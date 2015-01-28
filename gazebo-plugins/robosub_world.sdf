@@ -17,7 +17,7 @@
         <visual name="visual">
           <geometry>
             <mesh>
-              <uri>file://singapore_scena.dae</uri>
+              <uri>file://singapore-2015-scena.dae</uri>
             </mesh>
           </geometry>
         </visual>
